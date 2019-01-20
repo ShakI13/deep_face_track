@@ -1,0 +1,7 @@
+*.db
+x64
+.vs
+/pytorch_test/*.user
+*.opendb
+/pytorch_test/pytorch_test.dir
+/pytorch_test/build
