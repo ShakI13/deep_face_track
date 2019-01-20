@@ -136,14 +136,17 @@ void validate_face_detector_net()
 {
 	if (face_detector_net.empty())
 	{
-		std::string model_deploy_path = "C:/dev/deep_face_track/ThirdParty/awesome-face-detection-master/models/deploy.prototxt.txt";
-		std::string model_proto_path = "C:/dev/deep_face_track/ThirdParty/awesome-face-detection-master/models/res10_300x300_ssd_iter_140000.caffemodel";
-		std::cout << "Trying to load caffe network...\n";
+		std::string model_deploy_path = "./models/deploy.prototxt.txt";
+		std::string model_proto_path = "./models/res10_300x300_ssd_iter_140000.caffemodel";
+		//std::cout << "Trying to load caffe network...\n";
 		face_detector_net = cv::dnn::readNetFromCaffe(
 			model_deploy_path,
 			model_proto_path
 		);
-		std::cout << "done.\n";
+		std::cout << "selecting opencl runtime" << std::endl;
+		face_detector_net.setPreferableBackend(3);
+		face_detector_net.setPreferableTarget(2);
+		//std::cout << "done.\n";
 	}
 }
 
@@ -151,18 +154,21 @@ void validate_head_pose_net()
 {
 	if (head_pose_net.get() == nullptr)
 	{
-		std::string model_path = "C:\\dev\\deep_face_track\\model.pt";
-		std::cout << "Trying to load torch network...\n";
+		std::string model_path = ".\\models\\model.pt";
+		//std::cout << "Trying to load torch network...\n";
 		std::ifstream in(model_path, std::ios_base::binary);
-		if (in.fail()) {
-			std::cout << "failed to open model" << std::endl;
-		}
-		else {
-			std::cout << "successed to open model" << std::endl;
-		}
 		head_pose_net = torch::jit::load(in);
-		head_pose_net->to(at::kCUDA);
-		std::cout << "done.\n";
+		if (torch::cuda::is_available() && torch::cuda::device_count() > 0)
+		{
+			std::cout << "selecting CUDA runtime" << std::endl;
+			head_pose_net->to(at::kCUDA);
+		}
+		if (torch::hasHIP())
+		{
+			std::cout << "selecting HIP runtime" << std::endl;
+			head_pose_net->to(at::kHIP);
+		}
+		//std::cout << "done.\n";
 	}
 }
 
@@ -226,15 +232,83 @@ void drawAxis(float yaw, float pitch, float roll, cv::Mat& img, float tdx = 0.0f
 	cv::line(img, cv::Point(tdx, tdy), cv::Point(x3, y3), cv::Scalar(255, 0, 0), 3);
 }
 
+float get_fps(std::vector<float>& fps)
+{
+	float avr_fps = 0.0;
+	for (int i = 0; i < fps.size(); i++)
+	{
+		avr_fps += fps[i];
+	}
+	if (fps.size() > 0)
+	{
+		avr_fps /= fps.size();
+	}
+	return avr_fps;
+}
+
+void str_report(int frame_num, float yaw, float pitch, float roll, std::vector<float>& fps, std::map< std::string, float >& timers)
+{
+	std::stringstream ss;
+
+	ss << "frame " << frame_num;
+
+	ss << ", yaw: " << cv::format("%.6f", yaw) << ", pitch:" << cv::format("%.6f", pitch) << ", roll: " << cv::format("%.6f", roll);
+
+
+	float avr_fps = 0.0;
+	for (int i = 0; i < fps.size(); i++)
+	{
+		avr_fps += fps[i];
+	}
+	if (fps.size() > 0)
+	{
+		avr_fps /= fps.size();
+	}
+	ss << ", fps " << avr_fps;
+
+	for (auto& x : timers)
+	{
+		ss << ", " << x.first << ": " << cv::format("%.6f", x.second) << " msec";
+	}
+
+	std::cout << ss.str() << std::endl;
+}
+
 int main()
 {
+	bool has_cuda = (torch::cuda::is_available() && torch::cuda::device_count() > 0);
+	bool has_hip = (torch::hasHIP());
+
 	//test_opencv();
 	//test_torch();
 	//test_network();
 
-	validate_face_detector_net();
-	validate_head_pose_net();
+	float target_fps = 7.0f;
+	int frame_pause = 1;
+	int remLen = 5;
 
+	std::vector< float > fps;
+	std::map< std::string, float > timers;
+	timers["load_face_det"] = 0.0f;
+	timers["load_head_pose"] = 0.0f;
+	timers["acquire_image"] = 0.0f;
+	timers["detect"] = 0.0f;
+	timers["head_pose"] = 0.0f;
+	timers["frame_time"] = 0.0f;
+
+	timers["load_face_det"] = cv::getTickCount();
+	validate_face_detector_net();
+	timers["load_face_det"] = (cv::getTickCount() - timers["load_face_det"]) / cv::getTickFrequency();
+
+	timers["load_head_pose"] = cv::getTickCount();
+	validate_head_pose_net();
+	timers["load_head_pose"] = (cv::getTickCount() - timers["load_head_pose"]) / cv::getTickFrequency();
+
+	std::vector<float> idx;
+	for (int i = 0; i < 66; i++)
+		idx.push_back(i);
+	torch::Tensor idx_tensor = torch::from_blob(&idx[0], { 66 }, at::kFloat);
+	idx_tensor.to(at::kCPU);
 
 	std::exception_ptr eptr;
 	cv::Mat img;
@@ -242,19 +316,31 @@ int main()
 	auto cap = cv::VideoCapture(0);
 	auto ret = cap.read(img);
 	int keyCode = -1;
+	int frameNum = 0;
 
 	while (keyCode != 27)
 	{
+		float yaw2 = 0.0f;
+		float pitch2 = 0.0f;
+		float roll2 = 0.0f;
+
+		float frame_time = cv::getTickCount();
+		timers["acquire_image"] = cv::getTickCount();
+		ret = cap.read(img);
 		cv::resize(img, imgResized, cv::Size(300, 300));
 		auto blob = cv::dnn::blobFromImage(imgResized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
-		
+		timers["acquire_image"] = (cv::getTickCount() - timers["acquire_image"]) / cv::getTickFrequency();
+
+		timers["detect"] = cv::getTickCount();
 		std::vector<std::string> outNames = face_detector_net.getUnconnectedOutLayersNames();
 		face_detector_net.setInput(blob);
 		std::vector<cv::Mat> outs;
 		face_detector_net.forward(outs, outNames);
 		int h = img.rows;
 		int w = img.cols;
+		timers["detect"] = (cv::getTickCount() - timers["detect"]) / cv::getTickFrequency();
 
+		timers["head_pose"] = cv::getTickCount();
 		float* data = (float*)outs[0].data;
 		for (size_t i = 0; i < outs[0].total(); i += 7)
 		{
@@ -281,38 +367,31 @@ int main()
 				bottom = h - 1;
 
 			cv::Mat img_face = img(cv::Rect(left, top, right - left, bottom - top));
-			//cv::namedWindow("webcam", cv::WINDOW_KEEPRATIO | cv::WINDOW_AUTOSIZE);
-			//cv::imshow("webcam", img_face);
 			try {
 				img_face.convertTo(img_face, CV_32F, 1.0 / 255);
 				cv::resize(img_face, img_face, cv::Size(224, 224));
 				//cv::cvtColor(img_face, img_face, cv::COLOR_RGB2BGR);
 
-				//auto img_data = load_test_image("C:\\dev\\deep_face_track\\image.txt");
-				//torch::Tensor tensor_face = torch::from_blob((void*)&img_data[0], { 1, 3, img_face.rows, img_face.cols }, at::kFloat);
 				torch::Tensor tensor_face = torch::from_blob(img_face.data, { 1, img_face.rows, img_face.cols, 3 }, at::kFloat);
-				tensor_face = tensor_face.to(at::kCUDA);
-				//std::cout << "device CUDA " << (tensor_face.device().type() == torch::kCUDA) << ", index " << tensor_face.device().index() << std::endl;
-				//torch::Tensor tensor_face = torch::CUDA(torch::kFloat32).tensorFromBlob(img_face.data, { 1, img_face.rows, img_face.cols, 3 });
-				//torch::Tensor tensor_face = torch::HIP(torch::kFloat32).tensorFromBlob(img_face.data, { 1, img_face.rows, img_face.cols, 3 });
-				//torch::Tensor tensor_face = torch::ones({ 1, img_face.rows, img_face.cols, 3 });
-				//torch::Tensor tensor_face = torch::CUDA(torch::kFloat32).copy(torch::ones({ 1, img_face.rows, img_face.cols, 3 }));
-				//tensor_face = torch::CUDA(torch::kFloat32).copy(tensor_face);
-				//tensor_face = tensor_face.view({ 1, img_face.rows, img_face.cols, 3 });
+				if (has_cuda)
+				{
+					tensor_face = tensor_face.to(at::kCUDA);
+				}
+				if (has_hip)
+				{
+					tensor_face = tensor_face.to(at::kHIP);
+				}
+
 				tensor_face = tensor_face.permute({ 0, 3, 1, 2 });
 				tensor_face[0][0] = tensor_face[0][0].sub(0.485).div(0.229);
 				tensor_face[0][1] = tensor_face[0][1].sub(0.456).div(0.224);
 				tensor_face[0][2] = tensor_face[0][2].sub(0.406).div(0.225);
-				//std::cout << tensor_face.size(1) << " " << tensor_face.size(2) << " " << tensor_face.size(3) << std::endl; //3,1080,1920
-
-				//std::cout << "image:\n" << tensor_face << std::endl;
 
 				std::vector<torch::jit::IValue> input;
-				//auto img_var = torch::autograd::make_variable(tensor_face, false);
 				input.emplace_back(tensor_face);
 
 				// Execute the model and turn its output into a tensor.
-				auto output = head_pose_net->forward(input).toTuple()->elements(); // .clone().squeeze(0);
+				auto output = head_pose_net->forward(input).toTuple()->elements();
 				auto yaw = output[0].toTensor();
 				auto pitch = output[1].toTensor();
 				auto roll = output[2].toTensor();
@@ -321,23 +400,12 @@ int main()
 				pitch = pitch.softmax(1).to(at::kCPU).view({ 66 });
 				roll = roll.softmax(1).to(at::kCPU).view({ 66 });
 
-				std::vector<float> idx;
-				for (int i = 0; i < 66; i++)
-					idx.push_back(i);
-				torch::Tensor idx_tensor = torch::from_blob(&idx[0], { 66 }, at::kFloat);
-				idx_tensor.to(at::kCPU);
+				yaw2 = ((yaw * idx_tensor).sum() * 3 - 99).item().toFloat();
+				pitch2 = ((pitch * idx_tensor).sum() * 3 - 99).item().toFloat();
+				roll2 = ((roll * idx_tensor).sum() * 3 - 99).item().toFloat();
 
-				auto yaw2 = ((yaw * idx_tensor).sum() * 3 - 99).item().toFloat();
-				auto pitch2 = ((pitch * idx_tensor).sum() * 3 - 99).item().toFloat();
-				auto roll2 = ((roll * idx_tensor).sum() * 3 - 99).item().toFloat();
-
-
-				//std::cout << "output: " << output << "\nend." << std::endl;
-				std::cout << "yaw:\n " << yaw2 << "\npitch:\n" << pitch2 << "\nroll:\n" << roll2 << std::endl;
+				//std::cout << "yaw:\n " << yaw2 << "\npitch:\n" << pitch2 << "\nroll:\n" << roll2 << std::endl;
 				drawAxis(yaw2, pitch2, roll2, img, (left + right) / 2, (top + bottom) / 2, (bottom - top) / 2);
-				/*auto yaw_output = output.slice(0, 0, 1);
-				auto pitch_output = output.slice(0, 1, 2);
-				auto roll_output = output.slice(0, 2, 3);*/
 			}
 			catch (std::exception & err) {
 				std::cout << err.what() << std::endl;
@@ -348,13 +416,38 @@ int main()
 			}
 			handle_eptr(eptr);
 		}
+		timers["head_pose"] = (cv::getTickCount() - timers["head_pose"]) / cv::getTickFrequency();
 
 		cv::namedWindow("webcam", cv::WINDOW_KEEPRATIO | cv::WINDOW_AUTOSIZE);
 		cv::imshow("webcam", img);
-		keyCode = cv::waitKey(33);
-		//std::cout << "keyCode: " << keyCode << std::endl;
-		ret = cap.read(img);
+		keyCode = cv::waitKey(frame_pause);
+		timers["frame_time"] = (cv::getTickCount() - frame_time) / cv::getTickFrequency();
+		if (fps.size() < (frameNum % 10 + 1))
+		{
+			fps.push_back(0.0);
+		}
+		fps[frameNum % 10] = 1.0 / timers["frame_time"];
+		str_report(frameNum, yaw2, pitch2, roll2, fps, timers);
+		frameNum++;
+
+		float avr_fps = get_fps(fps);
+		if (avr_fps < target_fps && frame_pause > 1)
+		{
+			if (abs(avr_fps - target_fps) > 5)
+				frame_pause -= 5;
+			else
+				frame_pause--;
+		}
+		if (avr_fps > target_fps)
+		{
+			if (abs(avr_fps - target_fps) > 5)
+				frame_pause += 5;
+			else
+				frame_pause++;
+		}
 	}
+
+	cv::destroyWindow("webcam");
 
 	std::cout << "Done.\n";
 	std::getchar();
