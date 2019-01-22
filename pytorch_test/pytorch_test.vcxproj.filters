@@ -13,4 +13,7 @@
       <UniqueIdentifier>{D29A1410-3A93-3166-B16E-C0E20B17C597}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="soft_max.h" />
+  </ItemGroup>
 </Project>

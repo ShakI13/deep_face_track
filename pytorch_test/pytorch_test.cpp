@@ -1,7 +1,4 @@
-﻿#include "torch\torch.h"
-#include "torch\script.h"
-#include "torch\csrc\jit\argument_spec.h"
-#include "opencv2\core.hpp"
+﻿#include "opencv2\core.hpp"
 #include "opencv2\imgproc.hpp"
 #include "opencv2\highgui.hpp"
 #include "opencv2\videoio.hpp"
@@ -10,32 +7,10 @@
 #include <fstream>
 #include <memory>
 #include <math.h>
+#include "soft_max.h"
 
 cv::dnn::Net face_detector_net;
-std::shared_ptr< torch::jit::script::Module > head_pose_net;
-
-void test_torch()
-{
-	bool is_enabled = torch::cuda::is_available();
-	if (is_enabled)
-	{
-		auto device_count = torch::cuda::device_count();
-		std::cout << "Torch cuda enabled\nnumber of devices: " << device_count << "\n";
-
-		is_enabled = torch::cuda::cudnn_is_available();
-		if (is_enabled)
-		{
-			std::cout << "Torch cudnn enabled\n";
-		}
-		else
-		{
-			std::cout << "Torch cudnn NOT enabled\n";
-		}
-	}
-	else
-	{
-	}
-}
+cv::dnn::Net head_pose_net;
 
 void test_opencv()
 {
@@ -67,9 +42,9 @@ void test_opencv()
 
 void test_network()
 {
-	std::string model_deploy_path = "C:/dev/deep_face_track/ThirdParty/awesome-face-detection-master/models/deploy.prototxt.txt";
-	std::string model_proto_path = "C:/dev/deep_face_track/ThirdParty/awesome-face-detection-master/models/res10_300x300_ssd_iter_140000.caffemodel";
-	std::string model_path = "C:\\dev\\deep_face_track\\model.pt";
+	std::string model_deploy_path = "./models/deploy.prototxt.txt";
+	std::string model_proto_path = "./models/res10_300x300_ssd_iter_140000.caffemodel";
+	std::string model_path = ".\\models\\head_pose.onnx";
 
 	std::cout << "Trying to load caffe network...\n";
 	auto model = cv::dnn::readNetFromCaffe(
@@ -78,26 +53,11 @@ void test_network()
 	);
 	std::cout << "load done.";
 
-	std::cout << "Trying to load torch network...\n";
-	std::ifstream in(model_path, std::ios_base::binary);
-	if (in.fail()) {
-		std::cout << "failed to open model" << std::endl;
-	}
-	else {
-		std::cout << "successed to open model" << std::endl;
-	}
-	std::shared_ptr< torch::jit::script::Module > module = torch::jit::load(in);
+	std::cout << "Trying to load caffe network...\n";
+	auto module = cv::dnn::readNetFromONNX(model_path);
 	std::cout << "load done.";
 
 	std::getchar();
-	//module->forward()
-}
-
-std::vector<float> cvmat_to_vector(cv::Mat& mat)
-{
-	std::vector<float> data;
-
-	return data;
 }
 
 std::vector<float> load_test_image(std::string path, int batchSize = 1, int numChannels = 3, int width = 224, int height = 224)
@@ -138,7 +98,7 @@ void validate_face_detector_net()
 	{
 		std::string model_deploy_path = "./models/deploy.prototxt.txt";
 		std::string model_proto_path = "./models/res10_300x300_ssd_iter_140000.caffemodel";
-		//std::cout << "Trying to load caffe network...\n";
+		std::cout << "Trying to load face detection DNN...\n";
 		face_detector_net = cv::dnn::readNetFromCaffe(
 			model_deploy_path,
 			model_proto_path
@@ -152,22 +112,13 @@ void validate_face_detector_net()
 
 void validate_head_pose_net()
 {
-	if (head_pose_net.get() == nullptr)
+	if (head_pose_net.empty())
 	{
-		std::string model_path = ".\\models\\model.pt";
-		//std::cout << "Trying to load torch network...\n";
-		std::ifstream in(model_path, std::ios_base::binary);
-		head_pose_net = torch::jit::load(in);
-		if (torch::cuda::is_available() && torch::cuda::device_count() > 0)
-		{
-			std::cout << "selecting CUDA runtime" << std::endl;
-			head_pose_net->to(at::kCUDA);
-		}
-		if (torch::hasHIP())
-		{
-			std::cout << "selecting HIP runtime" << std::endl;
-			head_pose_net->to(at::kHIP);
-		}
+		std::string model_path = ".\\models\\head_pose.onnx";
+		std::cout << "Trying to load head pose DNN...\n";
+		head_pose_net = cv::dnn::readNetFromONNX(model_path);
+		head_pose_net.setPreferableBackend(3);
+		head_pose_net.setPreferableTarget(2);
 		//std::cout << "done.\n";
 	}
 }
@@ -250,9 +201,9 @@ void str_report(int frame_num, float yaw, float pitch, float roll, std::vector<f
 {
 	std::stringstream ss;
 
-	ss << "frame " << frame_num;
+	//ss << "frame " << frame_num;
 
-	ss << ", yaw: " << cv::format("%.6f", yaw) << ", pitch:" << cv::format("%.6f", pitch) << ", roll: " << cv::format("%.6f", roll);
+	ss << "yaw: " << cv::format("%.6f", yaw) << ", pitch:" << cv::format("%.6f", pitch) << ", roll: " << cv::format("%.6f", roll);
 
 
 	float avr_fps = 0.0;
@@ -276,14 +227,11 @@ void str_report(int frame_num, float yaw, float pitch, float roll, std::vector<f
 
 int main()
 {
-	bool has_cuda = (torch::cuda::is_available() && torch::cuda::device_count() > 0);
-	bool has_hip = (torch::hasHIP());
-
 	//test_opencv();
 	//test_torch();
 	//test_network();
 
-	float target_fps = 7.0f;
+	float target_fps = 25.0f;
 	int frame_pause = 1;
 	int remLen = 5;
 
@@ -307,17 +255,23 @@ int main()
 	std::vector<float> idx;
 	for (int i = 0; i < 66; i++)
 		idx.push_back(i);
-	torch::Tensor idx_tensor = torch::from_blob(&idx[0], { 66 }, at::kFloat);
-	idx_tensor.to(at::kCPU);
 
 	std::exception_ptr eptr;
 	cv::Mat img;
 	cv::Mat imgResized;
+	std::cout << "Accessing webcam..." << std::endl;
 	auto cap = cv::VideoCapture(0);
 	auto ret = cap.read(img);
+	if (!ret)
+	{
+		std::cout << "failed to get an image from the camera! Press any key to close the program" << std::endl;
+		std::getchar();
+		return -1;
+	}
 	int keyCode = -1;
 	int frameNum = 0;
 
+	std::cout << "Starting acquisition loop..." << std::endl;
 	while (keyCode != 27)
 	{
 		float yaw2 = 0.0f;
@@ -327,12 +281,18 @@ int main()
 		float frame_time = cv::getTickCount();
 		timers["acquire_image"] = cv::getTickCount();
 		ret = cap.read(img);
+		if (!ret)
+		{
+			std::cout << "failed to get an image from the camera! Press any key to close the program" << std::endl;
+			std::getchar();
+			return -1;
+		}
 		cv::resize(img, imgResized, cv::Size(300, 300));
 		auto blob = cv::dnn::blobFromImage(imgResized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
 		timers["acquire_image"] = (cv::getTickCount() - timers["acquire_image"]) / cv::getTickFrequency();
 
 		timers["detect"] = cv::getTickCount();
-		std::vector<std::string> outNames = face_detector_net.getUnconnectedOutLayersNames();
+		std::vector<cv::String> outNames = face_detector_net.getUnconnectedOutLayersNames();
 		face_detector_net.setInput(blob);
 		std::vector<cv::Mat> outs;
 		face_detector_net.forward(outs, outNames);
@@ -353,18 +313,29 @@ int main()
 			int top = (int)(data[i + 4] * h);
 			int right = (int)(data[i + 5] * w);
 			int bottom = (int)(data[i + 6] * h);
-			int width = right - left + 1;
-			int height = bottom - top + 1;
 			drawPred(confidence, left, top, right, bottom, img);
 
 			if (left < 0)
 				left = 0;
 			if (top < 0)
 				top = 0;
+			if (left >= w)
+				left = w - 1;
+			if (top >= h)
+				top = h - 1;
+			if (right < 0)
+				right = 0;
+			if (bottom < 0)
+				bottom = 0;
 			if (right >= w)
 				right = w - 1;
 			if (bottom >= h)
 				bottom = h - 1;
+			int width = right - left + 1;
+			int height = bottom - top + 1;
+
+			if (width < 10 || height < 10)
+				continue;
 
 			cv::Mat img_face = img(cv::Rect(left, top, right - left, bottom - top));
 			try {
@@ -372,39 +343,68 @@ int main()
 				cv::resize(img_face, img_face, cv::Size(224, 224));
 				//cv::cvtColor(img_face, img_face, cv::COLOR_RGB2BGR);
 
-				torch::Tensor tensor_face = torch::from_blob(img_face.data, { 1, img_face.rows, img_face.cols, 3 }, at::kFloat);
-				if (has_cuda)
+				std::vector< cv::Mat > img_channels(3);
+				cv::split(img_face, img_channels);
+				img_channels[0] = img_channels[0] - 0.485f;
+				img_channels[1] = img_channels[1] - 0.456f;
+				img_channels[2] = img_channels[2] - 0.406f;
+				img_channels[0] = img_channels[0] / 0.229f;
+				img_channels[1] = img_channels[1] / 0.224f;
+				img_channels[2] = img_channels[2] / 0.225f;
+				cv::merge(img_channels, img_face);
+
+				auto blob_face = cv::dnn::blobFromImage(img_face);
+
+				//// test python image and result
+				//auto img_data = load_test_image("C:\\dev\\deep_face_track\\image.txt");
+				//auto res_data = load_test_image("C:\\dev\\deep_face_track\\result.txt");
+				//// copy image
+				//float diff = 0.0f;
+				//for (int i = 0; i < img_data.size(); i++)
+				//{
+				//	float v1 = ((float*)blob_face.data)[i];
+				//	float v2 = img_data[i];
+				//	diff += abs(v1 - v2);
+				//	((float*)blob_face.data)[i] = img_data[i];
+				//}
+
+				head_pose_net.setInput(blob_face);
+				outNames = { "509", "510", "511" };
+				outs.clear();
+				head_pose_net.forward(outs, outNames);
+
+				std::vector<float> yaw, pitch, roll;
+				yaw.assign((float*)outs[0].datastart, (float*)(outs[0].datastart) + 66);
+				pitch.assign((float*)outs[1].datastart, (float*)(outs[1].datastart) + 66);
+				roll.assign((float*)outs[2].datastart, (float*)(outs[2].datastart) + 66);
+
+				//// concatenate results
+				//std::vector<float> all_res;
+				//all_res.insert(all_res.end(), yaw.begin(), yaw.end());
+				//all_res.insert(all_res.end(), pitch.begin(), pitch.end());
+				//all_res.insert(all_res.end(), roll.begin(), roll.end());
+				//diff = 0.0f;
+				//for (int i = 0; i < all_res.size(); i++)
+				//{
+				//	float v1 = all_res[i];
+				//	float v2 = res_data[i];
+				//	diff += abs(v1 - v2);
+				//}
+
+				softmax(yaw);
+				softmax(pitch);
+				softmax(roll);
+
+				float yaw_sum = 0.0f, pitch_sum = 0.0f, roll_sum = 0.0f;
+				for (int i = 0; i < 66; i++)
 				{
-					tensor_face = tensor_face.to(at::kCUDA);
+					yaw_sum += yaw[i] * idx[i];
+					pitch_sum += pitch[i] * idx[i];
+					roll_sum += roll[i] * idx[i];
 				}
-				if (has_hip)
-				{
-					tensor_face = tensor_face.to(at::kHIP);
-				}
-
-				tensor_face = tensor_face.permute({ 0, 3, 1, 2 });
-				tensor_face[0][0] = tensor_face[0][0].sub(0.485).div(0.229);
-				tensor_face[0][1] = tensor_face[0][1].sub(0.456).div(0.224);
-				tensor_face[0][2] = tensor_face[0][2].sub(0.406).div(0.225);
-
-				std::vector<torch::jit::IValue> input;
-				input.emplace_back(tensor_face);
-
-				// Execute the model and turn its output into a tensor.
-				auto output = head_pose_net->forward(input).toTuple()->elements();
-				auto yaw = output[0].toTensor();
-				auto pitch = output[1].toTensor();
-				auto roll = output[2].toTensor();
-
-				yaw = yaw.softmax(1).to(at::kCPU).view({ 66 });
-				pitch = pitch.softmax(1).to(at::kCPU).view({ 66 });
-				roll = roll.softmax(1).to(at::kCPU).view({ 66 });
-
-				yaw2 = ((yaw * idx_tensor).sum() * 3 - 99).item().toFloat();
-				pitch2 = ((pitch * idx_tensor).sum() * 3 - 99).item().toFloat();
-				roll2 = ((roll * idx_tensor).sum() * 3 - 99).item().toFloat();
-
-				//std::cout << "yaw:\n " << yaw2 << "\npitch:\n" << pitch2 << "\nroll:\n" << roll2 << std::endl;
+				yaw2 = yaw_sum * 3.0f - 99.0f;
+				pitch2 = pitch_sum * 3.0f - 99.0f;
+				roll2 = roll_sum * 3.0f - 99.0f;
 				drawAxis(yaw2, pitch2, roll2, img, (left + right) / 2, (top + bottom) / 2, (bottom - top) / 2);
 			}
 			catch (std::exception & err) {
@@ -451,15 +451,6 @@ int main()
 
 	std::cout << "Done.\n";
 	std::getchar();
+
+	return 0;
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.

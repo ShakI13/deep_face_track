@@ -36,6 +36,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -83,7 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\libtorch\include;C:\dev\deep_face_track\ThirdParty\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -113,7 +114,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opencv_core401d.lib;opencv_highgui401d.lib;opencv_imgproc401d.lib;opencv_imgcodecs401d.lib;opencv_videoio401d.lib;opencv_dnn401d.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\torch.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cudart_static.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\caffe2_gpu.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\caffe2.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\c10_cuda.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\c10.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\curand.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cublas_device.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core345d.lib;opencv_highgui345d.lib;opencv_imgproc345d.lib;opencv_imgcodecs345d.lib;opencv_videoio345d.lib;opencv_dnn345d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -143,6 +144,8 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -157,7 +160,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opencv_core401.lib;opencv_highgui401.lib;opencv_imgproc401.lib;opencv_imgcodecs401.lib;opencv_videoio401.lib;opencv_dnn401.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\torch.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cudart_static.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\caffe2_gpu.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\caffe2.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\c10_cuda.lib;C:\dev\deep_face_track\ThirdParty\libtorch\lib\c10.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\curand.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\lib\x64\cublas_device.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core345.lib;opencv_highgui345.lib;opencv_imgproc345.lib;opencv_imgcodecs345.lib;opencv_videoio345.lib;opencv_dnn345.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -165,6 +168,7 @@
       <ImportLibrary>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -321,6 +325,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{0A67A5E9-B488-30A6-B656-23BB3CAB6CC9}</Project>
       <Name>ZERO_CHECK</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="soft_max.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
