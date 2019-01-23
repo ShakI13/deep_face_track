@@ -4,6 +4,8 @@
     <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cameras_discovery.cpp" />
+    <ClCompile Include="face_tracker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\CMakeLists.txt" />
@@ -15,5 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="soft_max.h" />
+    <ClInclude Include="cameras_discovery.h" />
+    <ClInclude Include="face_tracker.h" />
   </ItemGroup>
 </Project>

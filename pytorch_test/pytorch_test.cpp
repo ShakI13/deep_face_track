@@ -1,13 +1,16 @@
-﻿#include "opencv2\core.hpp"
+﻿#include <iostream>
+#include <fstream>
+#include <memory>
+#include <math.h>
+
+#include "opencv2\core.hpp"
 #include "opencv2\imgproc.hpp"
 #include "opencv2\highgui.hpp"
 #include "opencv2\videoio.hpp"
 #include "opencv2\dnn.hpp"
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <math.h>
+
 #include "soft_max.h"
+#include "cameras_discovery.h"
 
 cv::dnn::Net face_detector_net;
 cv::dnn::Net head_pose_net;
@@ -104,8 +107,8 @@ void validate_face_detector_net()
 			model_proto_path
 		);
 		std::cout << "selecting opencl runtime" << std::endl;
-		face_detector_net.setPreferableBackend(3);
-		face_detector_net.setPreferableTarget(2);
+		face_detector_net.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
+		face_detector_net.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
 	}
 }
@@ -117,8 +120,8 @@ void validate_head_pose_net()
 		std::string model_path = ".\\models\\head_pose.onnx";
 		std::cout << "Trying to load head pose DNN...\n";
 		head_pose_net = cv::dnn::readNetFromONNX(model_path);
-		head_pose_net.setPreferableBackend(3);
-		head_pose_net.setPreferableTarget(2);
+		head_pose_net.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
+		head_pose_net.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
 	}
 }
@@ -260,8 +263,21 @@ int main()
 	cv::Mat img;
 	cv::Mat imgResized;
 	std::cout << "Accessing webcam..." << std::endl;
-	auto cap = cv::VideoCapture(0);
-	auto ret = cap.read(img);
+	//auto cap = cv::VideoCapture(0);
+	auto cap = CameraDiscovery();
+	if (cap.numCameras() > 0)
+	{
+		cap.selectDevice(0);
+		cap.device().set(cv::VideoCaptureProperties::CAP_PROP_SETTINGS, 0);
+	}
+	else
+	{
+		std::cout << "Failed to select a camera! Press any key to close the program" << std::endl;
+		std::getchar();
+		return -1;
+	}
+
+	auto ret = cap.getImage(img);
 	if (!ret)
 	{
 		std::cout << "failed to get an image from the camera! Press any key to close the program" << std::endl;
@@ -270,6 +286,8 @@ int main()
 	}
 	int keyCode = -1;
 	int frameNum = 0;
+	int keyNumPlus = 45;
+	int keyNumMinus = 43;
 
 	std::cout << "Starting acquisition loop..." << std::endl;
 	while (keyCode != 27)
@@ -280,7 +298,7 @@ int main()
 
 		float frame_time = cv::getTickCount();
 		timers["acquire_image"] = cv::getTickCount();
-		ret = cap.read(img);
+		ret = cap.getImage(img);
 		if (!ret)
 		{
 			std::cout << "failed to get an image from the camera! Press any key to close the program" << std::endl;
@@ -421,6 +439,35 @@ int main()
 		cv::namedWindow("webcam", cv::WINDOW_KEEPRATIO | cv::WINDOW_AUTOSIZE);
 		cv::imshow("webcam", img);
 		keyCode = cv::waitKey(frame_pause);
+		//std::cout << "keyCode: " << keyCode << std::endl;
+
+		if (keyCode == 45)
+		{
+			std::cout << "UP" << std::endl;
+			auto contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_CONTRAST);
+			contrast *= 1.3f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_CONTRAST, contrast);
+			contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS);
+			contrast *= 1.3f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS, contrast);
+			contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_SATURATION);
+			contrast *= 1.3f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_SATURATION, contrast);
+		}
+		else if (keyCode == 43)
+		{
+			std::cout << "DOWN" << std::endl;
+			auto contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_CONTRAST);
+			contrast *= 0.7f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_CONTRAST, contrast);
+			contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS);
+			contrast *= 0.7f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_BRIGHTNESS, contrast);
+			contrast = cap.device().get(cv::VideoCaptureProperties::CAP_PROP_SATURATION);
+			contrast *= 0.7f;
+			cap.device().set(cv::VideoCaptureProperties::CAP_PROP_SATURATION, contrast);
+		}
+
 		timers["frame_time"] = (cv::getTickCount() - frame_time) / cv::getTickFrequency();
 		if (fps.size() < (frameNum % 10 + 1))
 		{

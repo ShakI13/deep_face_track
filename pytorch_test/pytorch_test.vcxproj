@@ -319,6 +319,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp" />
+    <ClCompile Include="cameras_discovery.cpp" />
+    <ClCompile Include="face_tracker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\build\ZERO_CHECK.vcxproj">
@@ -327,6 +329,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cameras_discovery.h" />
+    <ClInclude Include="face_tracker.h" />
     <ClInclude Include="soft_max.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
