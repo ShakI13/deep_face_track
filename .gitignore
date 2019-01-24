@@ -1,7 +1,11 @@
 *.db
-x64
-.vs
-/pytorch_test/*.user
+*.user
 *.opendb
-/pytorch_test/pytorch_test.dir
-/pytorch_test/build
+*.dir
+.vs
+x64
+*.TMP
+build
+Release
+Debug
+GeneratedFiles

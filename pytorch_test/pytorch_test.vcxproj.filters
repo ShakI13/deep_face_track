@@ -9,9 +9,6 @@
     <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{D29A1410-3A93-3166-B16E-C0E20B17C597}</UniqueIdentifier>
     </Filter>

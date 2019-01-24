@@ -20,6 +20,7 @@ int FaceTracker::debug_loop()
 {
 	bool dbgShow = true;
 	start();
+	_log("Starting acquisition loop...");
 	auto ret = processImage(dbgShow);
 	while (ret)
 	{
@@ -81,8 +82,6 @@ bool FaceTracker::processImage(bool dbgShow)
 	int keyCode = -1;
 	int keyNumPlus = 45;
 	int keyNumMinus = 43;
-
-	_log("Starting acquisition loop...");
 
 	float frame_time = cv::getTickCount();
 	_timers["acquire_image"] = cv::getTickCount();
