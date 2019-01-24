@@ -115,7 +115,7 @@
     </Midl>
     <Link>
       <AdditionalDependencies>opencv_core345d.lib;opencv_highgui345d.lib;opencv_imgproc345d.lib;opencv_imgcodecs345d.lib;opencv_videoio345d.lib;opencv_dnn345d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -161,7 +161,7 @@
     </Midl>
     <Link>
       <AdditionalDependencies>opencv_core345.lib;opencv_highgui345.lib;opencv_imgproc345.lib;opencv_imgcodecs345.lib;opencv_videoio345.lib;opencv_dnn345.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -318,6 +318,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
     <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp" />
     <ClCompile Include="cameras_discovery.cpp" />
     <ClCompile Include="face_tracker.cpp" />
@@ -329,6 +330,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
     <ClInclude Include="cameras_discovery.h" />
     <ClInclude Include="face_tracker.h" />
     <ClInclude Include="soft_max.h" />

@@ -5,6 +5,7 @@
 #include "api/plugin-api.hpp"
 #include "compat/timer.hpp"
 #include "compat/macros.hpp"
+#include "QtFaceTracker.h"
 
 #include <cmath>
 
@@ -20,6 +21,7 @@ private:
 	static const double incr[6];
 	double last_x[6];
 	Timer t;
+	QtFaceTracker ft;
 };
 
 class DeepFaceTrackerDialog : public ITrackerDialog

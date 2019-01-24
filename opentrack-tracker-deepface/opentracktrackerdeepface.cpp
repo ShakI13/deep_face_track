@@ -33,6 +33,7 @@ DeepFaceTracker::~DeepFaceTracker()
 module_status DeepFaceTracker::start_tracker(QFrame*)
 {
 	t.start();
+	ft.startAsync();
 
 	return status_ok();
 }
@@ -45,15 +46,27 @@ void DeepFaceTracker::data(double *data)
 {
 	const double dt = t.elapsed_seconds();
 	t.start();
-
+/*
 #ifdef EMIT_NAN
 	if ((rand() % 4) == 0)
 	{
 		for (int i = 0; i < 6; i++)
 			data[i] = 0. / 0.;
 	}
-	else
-#endif
+	else\*/
+//#endif
+		float x, y, z, yaw, pitch, roll;
+
+		ft.getTranslations(x, y, z);
+		ft.getRotations(yaw, pitch, roll);
+
+		data[0] = x / 5.0f;
+		data[1] = y / 5.0f;
+		data[2] = z * 100.0f;
+		data[3] = yaw * 1.0f;
+		data[4] = pitch * 1.0f;
+		data[5] = roll * 1.0f;
+		/*
 		for (int i = 0; i < 6; i++)
 		{
 			double x = last_x[i] + incr[i] * dt;
@@ -72,7 +85,7 @@ void DeepFaceTracker::data(double *data)
 			{
 				data[i] = x * 100 / 180.;
 			}
-		}
+		}*/
 }
 
 DeepFaceTrackerDialog::DeepFaceTrackerDialog()

@@ -5,13 +5,33 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-	<ClCompile Include="GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pytorch_test\cameras_discovery.cpp" />
+    <ClCompile Include="..\pytorch_test\face_tracker.cpp" />
+    <ClCompile Include="QtCameraDiscovery.cpp" />
+    <ClCompile Include="QtFaceTracker.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_QtFaceTracker.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_QtFaceTracker.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="opentracktrackerdeepface_global.h" />
     <ClInclude Include="GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pytorch_test\cameras_discovery.h" />
+    <ClInclude Include="..\pytorch_test\face_tracker.h" />
+    <ClInclude Include="..\pytorch_test\soft_max.h" />
+    <ClInclude Include="QtCameraDiscovery.h" />
+    <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -37,5 +57,6 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="opentracktrackerdeepface.h" />
+    <CustomBuild Include="QtFaceTracker.h" />
   </ItemGroup>
 </Project>
