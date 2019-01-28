@@ -34,6 +34,9 @@
     <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="dft_frame_data.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">

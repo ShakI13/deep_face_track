@@ -8,7 +8,7 @@
 #include "opencv2\highgui.hpp"
 #include "opencv2\videoio.hpp"
 #include "opencv2\dnn.hpp"
-
+#include "opencv2\core\ocl.hpp"
 #include "face_tracker.h"
 
 void test_opencv()
@@ -97,6 +97,49 @@ int main()
 	//test_torch();
 	//test_network();
 
+	std::vector< cv::ocl::PlatformInfo > platformsInfo;
+	cv::ocl::getPlatfomsInfo(platformsInfo);
+	for (int i = 0; i < platformsInfo.size(); i++)
+	{
+		auto info = platformsInfo[i];
+		std::stringstream ss;
+		ss << "\nPlatform name: " << info.name() << " vendor: " << info.vendor() << " version: " << info.version() << " devices: " << info.deviceNumber();
+		cv::ocl::Device device;
+		for (int j = 0; j < info.deviceNumber(); j++)
+		{
+			info.getDevice(device, j);
+			ss << "\n device: " << device.name();
+			ss << "\n version: " << device.version();
+			ss << "\n vendor: " << device.vendorName();
+			ss << "\n driver version: " << device.driverVersion();
+			ss << "\n OpenCL version: " << device.OpenCLVersion();
+			ss << "\n OpenCL C version: " << device.OpenCL_C_Version();
+			ss << "\n extensions: " << device.extensions();
+			ss << "\n globalMemSize: " << device.globalMemSize();
+			ss << "\n localMemSize:  " << device.localMemSize();
+		}
+		std::cout << ss.str() << std::endl;
+	}
+
+	//std::cout << "Context devices: " << std::endl;
+	//cv::ocl::Context ctx;
+	//ctx = cv::ocl::Context::getDefault();
+	////ctx.create(cv::ocl::Device::TYPE_ALL);
+
+	//for (int i = 0; i < ctx.ndevices(); i++)
+	//{
+	//	cv::ocl::Device device = ctx.device(i);
+	//	std::stringstream ss;
+	//	ss << "\n device: " << device.name();
+	//	ss << "\n version: " << device.version();
+	//	ss << "\n vendor: " << device.vendorName();
+	//	std::cout << ss.str() << std::endl;
+	//}
+
+	//cv::ocl::setUseOpenCL(false);
+	//cv::ocl::setUseOpenCL(true);
+
 	FaceTracker ft;
 	return ft.debug_loop();
+	std::getchar();
 }

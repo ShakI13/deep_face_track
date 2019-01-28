@@ -1,5 +1,6 @@
 #include "face_tracker.h"
 #include "soft_max.h"
+#include "opencv2/core/ocl.hpp"
 
 FaceTracker::FaceTracker()
 {
@@ -52,6 +53,21 @@ bool FaceTracker::start()
 
 	for (int i = 0; i < 66; i++)
 		idx.push_back(i);
+
+	//std::cout << "Context devices: " << std::endl;
+	//cv::ocl::Context ctx;
+	//ctx = cv::ocl::Context::getDefault();
+	////ctx.create(cv::ocl::Device::TYPE_ALL);
+
+	//for (int i = 0; i < ctx.ndevices(); i++)
+	//{
+	//	cv::ocl::Device device = ctx.device(i);
+	//	std::stringstream ss;
+	//	ss << "\n device: " << device.name();
+	//	ss << "\n version: " << device.version();
+	//	ss << "\n vendor: " << device.vendorName();
+	//	std::cout << ss.str() << std::endl;
+	//}
 
 	_log("Accessing webcam...");
 	if (_cameras.get() == nullptr)
@@ -329,6 +345,7 @@ void FaceTracker::_load_face_detector_net()
 			model_proto_path
 		);
 		_log("selecting opencl runtime");
+		
 		_net_detector.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
 		_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
@@ -342,8 +359,8 @@ void FaceTracker::_load_head_pose_net()
 		std::string model_path = ".\\models\\head_pose.onnx";
 		_log("Trying to load head pose DNN...");
 		_net_pose = cv::dnn::readNetFromONNX(model_path);
-		_net_pose.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
-		_net_pose.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
+		_net_detector.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
+		_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
 	}
 }

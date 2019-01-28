@@ -197,6 +197,7 @@
     <ClInclude Include="..\pytorch_test\cameras_discovery.h" />
     <ClInclude Include="..\pytorch_test\face_tracker.h" />
     <ClInclude Include="..\pytorch_test\soft_max.h" />
+    <ClInclude Include="dft_frame_data.h" />
     <ClInclude Include="GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h" />
     <ClInclude Include="QtCameraDiscovery.h" />
     <CustomBuild Include="QtFaceTracker.h">
