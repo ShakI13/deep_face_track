@@ -8,10 +8,7 @@
 #include "opencv2\core.hpp"
 #include "opencv2\imgproc.hpp"
 #include "opencv2\highgui.hpp"
-#include "opencv2\videoio.hpp"
 #include "opencv2\dnn.hpp"
-
-#include "cameras_discovery.h"
 
 class FaceTracker
 {
@@ -19,15 +16,13 @@ public:
 	FaceTracker();
 	~FaceTracker();
 
-	int debug_loop();
-	virtual bool start();
+	virtual void start();
 	virtual void stop();
-	virtual bool processImage(bool dbgShow = false);
+	virtual bool processImage(cv::Mat& img, bool dbgShow = false);
 	void getRotations(float& yaw, float& pitch, float& roll);
 	void getTranslations(float& x, float& y, float& z);
 
 protected:
-	std::shared_ptr< CameraDiscovery > _cameras;
 	cv::dnn::Net _net_detector;
 	cv::dnn::Net _net_pose;
 	cv::Mat _img_captured;

@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cameras_discovery.cpp" />
     <ClCompile Include="face_tracker.cpp" />
     <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
+    <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp" />
+    <ClCompile Include="memory_map_data.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -18,5 +17,6 @@
     <ClInclude Include="cameras_discovery.h" />
     <ClInclude Include="face_tracker.h" />
     <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
+    <ClInclude Include="memory_map_data.h" />
   </ItemGroup>
 </Project>

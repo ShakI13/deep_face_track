@@ -10,6 +10,7 @@
 #include "opencv2\dnn.hpp"
 #include "opencv2\core\ocl.hpp"
 #include "face_tracker.h"
+#include "memory_map_data.h"
 
 void test_opencv()
 {
@@ -91,55 +92,130 @@ std::vector<float> load_test_image(std::string path, int batchSize = 1, int numC
 	//return mat2;
 }
 
+struct InfoPart
+{
+	int send;
+	int receive;
+	char message[256];
+}; 
+
+void test_set_str(InfoPart& info, std::string str)
+{
+	memset(&info.message[0], '\0', 256);
+	strcat_s(&info.message[0], 256, str.c_str());
+}
+
+#define _s(a, b) test_set_str(a,b)
+
+void test_mutex()
+{
+	auto client = MemoryMapData<InfoPart>();
+	auto server = MemoryMapData<InfoPart>();
+
+	int server_send = 0;
+	int server_receive = 1;
+	std::string server_message;
+	server.create("dtf_test_memmap", "dtf_test_mutex", false);
+	server.lock();
+	server().send = server_send;
+	server().receive = server_receive;
+	_s(server(), "server: hello client");
+	server.unlock();
+
+	int send = 0;
+	int receive = 0;
+	std::string message;
+	client.create("dtf_test_memmap", "dtf_test_mutex");
+	client.lock();
+	if (receive != client().receive)
+	{
+		receive = client().receive;
+		message = client().message;
+
+		std::cout << "Received from server " << message << std::endl;
+
+		send++;
+		client().send = send;
+		_s(client(), "client: hello server");
+	}
+	client.unlock();
+
+	server.lock();
+	if (server_send != server().send)
+	{
+		server_send = server().send;
+		server_message = server().message;
+
+		std::cout << "Received from client " << server_message << std::endl;
+
+		server_receive++;
+		server().receive = server_receive;
+		_s(server(), "server: ok");
+	}
+	server.unlock();
+
+	client.lock();
+	if (receive != client().receive)
+	{
+		receive = client().receive;
+		message = client().message;
+
+		std::cout << "Received from server " << message << std::endl;
+	}
+	client.unlock();
+}
+
 int main()
 {
 	//test_opencv();
 	//test_torch();
-	//test_network();
+	test_network();
+	//test_mutex();
+	return 0;
 
-	std::vector< cv::ocl::PlatformInfo > platformsInfo;
-	cv::ocl::getPlatfomsInfo(platformsInfo);
-	for (int i = 0; i < platformsInfo.size(); i++)
-	{
-		auto info = platformsInfo[i];
-		std::stringstream ss;
-		ss << "\nPlatform name: " << info.name() << " vendor: " << info.vendor() << " version: " << info.version() << " devices: " << info.deviceNumber();
-		cv::ocl::Device device;
-		for (int j = 0; j < info.deviceNumber(); j++)
-		{
-			info.getDevice(device, j);
-			ss << "\n device: " << device.name();
-			ss << "\n version: " << device.version();
-			ss << "\n vendor: " << device.vendorName();
-			ss << "\n driver version: " << device.driverVersion();
-			ss << "\n OpenCL version: " << device.OpenCLVersion();
-			ss << "\n OpenCL C version: " << device.OpenCL_C_Version();
-			ss << "\n extensions: " << device.extensions();
-			ss << "\n globalMemSize: " << device.globalMemSize();
-			ss << "\n localMemSize:  " << device.localMemSize();
-		}
-		std::cout << ss.str() << std::endl;
-	}
-
-	//std::cout << "Context devices: " << std::endl;
-	//cv::ocl::Context ctx;
-	//ctx = cv::ocl::Context::getDefault();
-	////ctx.create(cv::ocl::Device::TYPE_ALL);
-
-	//for (int i = 0; i < ctx.ndevices(); i++)
+	//std::vector< cv::ocl::PlatformInfo > platformsInfo;
+	//cv::ocl::getPlatfomsInfo(platformsInfo);
+	//for (int i = 0; i < platformsInfo.size(); i++)
 	//{
-	//	cv::ocl::Device device = ctx.device(i);
+	//	auto info = platformsInfo[i];
 	//	std::stringstream ss;
-	//	ss << "\n device: " << device.name();
-	//	ss << "\n version: " << device.version();
-	//	ss << "\n vendor: " << device.vendorName();
+	//	ss << "\nPlatform name: " << info.name() << " vendor: " << info.vendor() << " version: " << info.version() << " devices: " << info.deviceNumber();
+	//	cv::ocl::Device device;
+	//	for (int j = 0; j < info.deviceNumber(); j++)
+	//	{
+	//		info.getDevice(device, j);
+	//		ss << "\n device: " << device.name();
+	//		ss << "\n version: " << device.version();
+	//		ss << "\n vendor: " << device.vendorName();
+	//		ss << "\n driver version: " << device.driverVersion();
+	//		ss << "\n OpenCL version: " << device.OpenCLVersion();
+	//		ss << "\n OpenCL C version: " << device.OpenCL_C_Version();
+	//		ss << "\n extensions: " << device.extensions();
+	//		ss << "\n globalMemSize: " << device.globalMemSize();
+	//		ss << "\n localMemSize:  " << device.localMemSize();
+	//	}
 	//	std::cout << ss.str() << std::endl;
 	//}
 
-	//cv::ocl::setUseOpenCL(false);
-	//cv::ocl::setUseOpenCL(true);
+	////std::cout << "Context devices: " << std::endl;
+	////cv::ocl::Context ctx;
+	////ctx = cv::ocl::Context::getDefault();
+	//////ctx.create(cv::ocl::Device::TYPE_ALL);
 
-	FaceTracker ft;
-	return ft.debug_loop();
-	std::getchar();
+	////for (int i = 0; i < ctx.ndevices(); i++)
+	////{
+	////	cv::ocl::Device device = ctx.device(i);
+	////	std::stringstream ss;
+	////	ss << "\n device: " << device.name();
+	////	ss << "\n version: " << device.version();
+	////	ss << "\n vendor: " << device.vendorName();
+	////	std::cout << ss.str() << std::endl;
+	////}
+
+	////cv::ocl::setUseOpenCL(false);
+	////cv::ocl::setUseOpenCL(true);
+
+	//FaceTracker ft;
+	//return ft.debug_loop();
+	//std::getchar();
 }

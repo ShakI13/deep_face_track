@@ -10,31 +10,13 @@ FaceTracker::FaceTracker()
 	yaw2 = 0.0f;
 	pitch2 = 0.0f;
 	roll2 = 0.0f;
-	_cameras.reset();
 }
 
 FaceTracker::~FaceTracker()
 {
 }
 
-int FaceTracker::debug_loop()
-{
-	bool dbgShow = true;
-	start();
-	_log("Starting acquisition loop...");
-	auto ret = processImage(dbgShow);
-	while (ret)
-	{
-		ret = processImage(dbgShow);
-	}
-	stop();
-
-	_log("Press any key to close program...");
-	std::getchar();
-	return 0;
-}
-
-bool FaceTracker::start()
+void FaceTracker::start()
 {
 	_timers["load_face_det"] = 0.0f;
 	_timers["load_head_pose"] = 0.0f;
@@ -54,45 +36,29 @@ bool FaceTracker::start()
 	for (int i = 0; i < 66; i++)
 		idx.push_back(i);
 
-	//std::cout << "Context devices: " << std::endl;
-	//cv::ocl::Context ctx;
-	//ctx = cv::ocl::Context::getDefault();
-	////ctx.create(cv::ocl::Device::TYPE_ALL);
+	std::cout << "context devices: " << std::endl;
+	cv::ocl::Context ctx;
+	ctx = cv::ocl::Context::getDefault();
+	//ctx.create(cv::ocl::device::type_all);
 
-	//for (int i = 0; i < ctx.ndevices(); i++)
-	//{
-	//	cv::ocl::Device device = ctx.device(i);
-	//	std::stringstream ss;
-	//	ss << "\n device: " << device.name();
-	//	ss << "\n version: " << device.version();
-	//	ss << "\n vendor: " << device.vendorName();
-	//	std::cout << ss.str() << std::endl;
-	//}
-
-	_log("Accessing webcam...");
-	if (_cameras.get() == nullptr)
-		_cameras.reset(new CameraDiscovery());
-	if (_cameras->numCameras() > 0)
+	for (int i = 0; i < ctx.ndevices(); i++)
 	{
-		_cameras->selectDevice(0);
-		//_cameras->device().set(cv::VideoCaptureProperties::CAP_PROP_SETTINGS, 0);
-	}
-	else
-	{
-		_log("Failed to select a camera! Press any key to close the program");
-		std::getchar();
-		return -1;
+		cv::ocl::Device device = ctx.device(i);
+		std::stringstream ss;
+		ss << "\n device: " << device.name();
+		ss << "\n version: " << device.version();
+		ss << "\n vendor: " << device.vendorName();
+		std::cout << ss.str() << std::endl;
 	}
 }
 
 void FaceTracker::stop()
 {
 	cv::destroyWindow("webcam");
-	_cameras->selectDevice(-1);
 	idx.clear();
 }
 
-bool FaceTracker::processImage(bool dbgShow)
+bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 {
 	std::exception_ptr eptr;
 	int keyCode = -1;
@@ -101,12 +67,7 @@ bool FaceTracker::processImage(bool dbgShow)
 
 	float frame_time = cv::getTickCount();
 	_timers["acquire_image"] = cv::getTickCount();
-	auto ret = _cameras->getImage(_img_captured);
-	if (!ret)
-	{
-		_log("failed to get an image from the camera! Press any key to close the program");
-		return false;
-	}
+	img.copyTo(_img_captured);
 	cv::resize(_img_captured, _img_resized, cv::Size(300, 300));
 	auto blob = cv::dnn::blobFromImage(_img_resized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
 	_timers["acquire_image"] = (cv::getTickCount() - _timers["acquire_image"]) / cv::getTickFrequency();
@@ -226,6 +187,7 @@ bool FaceTracker::processImage(bool dbgShow)
 				pitch_sum += pitch[i] * idx[i];
 				roll_sum += roll[i] * idx[i];
 			}
+
 			yaw2 = yaw_sum * 3.0f - 99.0f;
 			pitch2 = pitch_sum * 3.0f - 99.0f;
 			roll2 = roll_sum * 3.0f - 99.0f;
@@ -344,8 +306,6 @@ void FaceTracker::_load_face_detector_net()
 			model_deploy_path,
 			model_proto_path
 		);
-		_log("selecting opencl runtime");
-		
 		_net_detector.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
 		_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
@@ -359,8 +319,8 @@ void FaceTracker::_load_head_pose_net()
 		std::string model_path = ".\\models\\head_pose.onnx";
 		_log("Trying to load head pose DNN...");
 		_net_pose = cv::dnn::readNetFromONNX(model_path);
-		_net_detector.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
-		_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
+		_net_pose.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
+		_net_pose.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
 		//std::cout << "done.\n";
 	}
 }

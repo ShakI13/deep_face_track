@@ -288,11 +288,13 @@
     <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp" />
     <ClCompile Include="cameras_discovery.cpp" />
     <ClCompile Include="face_tracker.cpp" />
+    <ClCompile Include="memory_map_data.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
     <ClInclude Include="cameras_discovery.h" />
     <ClInclude Include="face_tracker.h" />
+    <ClInclude Include="memory_map_data.h" />
     <ClInclude Include="soft_max.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

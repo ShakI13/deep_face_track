@@ -11,29 +11,92 @@
 #include "compat/math-imports.hpp"
 
 #include <QPushButton>
+#include <qmessagebox.h>
 
 #include <cmath>
 #include <QDebug>
 
-const double DeepFaceTracker::incr[6] =
-{
-	50, 40, 80,
-	70, 5, 3
-};
+#include <iostream>
+#include <cstdio>
+#include <string>
 
-DeepFaceTracker::DeepFaceTracker() :
-	last_x{ 0, 0, 0, 0, 0, 0 }
+void _open_log()
 {
+	using namespace std;
+	freopen("output.txt", "w", stdout);
+	freopen("error.txt", "w", stderr);
+}
+
+void _write_log(std::string line)
+{
+	using namespace std;
+	cout << line << endl;
+}
+
+DeepFaceTracker::DeepFaceTracker()
+{
+	_open_log();
+	_write_log("creating memmap...");
+	state = DeepFaceTrack_State::Initializing;
+	if (!dat.create(FT_MM_DATA, FT_MUTEX, false))
+	{
+		//QMessageBox msgBox;
+		//msgBox.setText("Failed to create memmap!");
+		//msgBox.setInformativeText("Attemp to create memmap failed");
+		//msgBox.setStandardButtons(QMessageBox::Ok);
+		//msgBox.show();
+		state = DeepFaceTrack_State::CameraError;
+		_write_log("creating memmap failed");
+		return;
+	}
+
+	dat.lock();
+	dat().handshake = dat().command = dat().state = state;
+	dat().x = dat().y = dat().z = dat().yaw = dat().pitch = dat().roll = 0.0f;
+	dat.unlock();
+	_write_log("creating memmap ok");
 }
 
 DeepFaceTracker::~DeepFaceTracker()
 {
+	if (reco.is_running())
+	{
+		dat.lock();
+		dat().handshake = 0;
+		dat().command = FTNoIR_Tracker_Command::FT_CM_EXIT;
+		dat.unlock();
+	}
 }
 
 module_status DeepFaceTracker::start_tracker(QFrame*)
 {
 	t.start();
-	ft.startAsync();
+
+	if (state == DeepFaceTrack_State::Initializing)
+		if (!reco.is_running())
+		{
+			_write_log("creating reco...");
+			reco.create("./deep_face_track_camera.exe");
+			_write_log("creating reco done");
+		}
+
+	if (!reco.is_running())
+	{
+		_write_log("reco not started");
+		//QMessageBox msgBox;
+		//msgBox.setText("Failed to start reco!");
+		//msgBox.setInformativeText("Attemp to start reco failed");
+		//msgBox.setStandardButtons(QMessageBox::Ok);
+		//msgBox.show();
+		state = DeepFaceTrack_State::CameraError;
+		return error("Attemp to start reco failed");
+	}
+
+	//_write_log("starting recognition");
+	dat.lock();
+	dat().command = FTNoIR_Tracker_Command::FT_CM_START;
+	dat().handshake = 0;
+	dat.unlock();
 
 	return status_ok();
 }
@@ -46,46 +109,36 @@ void DeepFaceTracker::data(double *data)
 {
 	const double dt = t.elapsed_seconds();
 	t.start();
-/*
-#ifdef EMIT_NAN
-	if ((rand() % 4) == 0)
+
+	float x, y, z, yaw, pitch, roll;
+	x = y = z = yaw = pitch = roll = 0.0f;
+	if (reco.is_running() && reco.iterate())
 	{
-		for (int i = 0; i < 6; i++)
-			data[i] = 0. / 0.;
-	}
-	else\*/
-//#endif
-		float x, y, z, yaw, pitch, roll;
-
-		ft.getTranslations(x, y, z);
-		ft.getRotations(yaw, pitch, roll);
-
-		data[0] = x / 5.0f;
-		data[1] = y / 5.0f;
-		data[2] = z * 100.0f;
-		data[3] = yaw * 1.0f;
-		data[4] = pitch * 1.0f;
-		data[5] = roll * 1.0f;
-		/*
-		for (int i = 0; i < 6; i++)
+		dat.lock();
+		dat().handshake = 0;
+		state = (DeepFaceTrack_State)dat().state;
+		if (state == DeepFaceTrack_State::Working)
 		{
-			double x = last_x[i] + incr[i] * dt;
-			if (x > 180)
-				x = -360 + x;
-			else if (x < -180)
-				x = 360 + x;
-			x = copysign(fmod(fabs(x), 360), x);
-			last_x[i] = x;
+			x = dat().x;
+			y = dat().y;
+			z = dat().z;
+			yaw = dat().yaw;
+			pitch = dat().pitch;
+			roll = dat().roll;
+		}
+		dat.unlock();
+	}
+	else
+		state = DeepFaceTrack_State::DnnError;
 
-			if (i >= 3)
-			{
-				data[i] = x;
-			}
-			else
-			{
-				data[i] = x * 100 / 180.;
-			}
-		}*/
+	data[0] = x / 5.0f;
+	data[1] = y / 5.0f;
+	data[2] = z * 100.0f;
+	data[3] = yaw * 1.0f;
+	data[4] = pitch * 1.0f;
+	data[5] = roll * 1.0f;
+	//_write_log("data: done");
+	_write_log("state: " + std::to_string(state));
 }
 
 DeepFaceTrackerDialog::DeepFaceTrackerDialog()

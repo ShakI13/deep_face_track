@@ -2,12 +2,16 @@
 
 #include "opentracktrackerdeepface_global.h"
 #include "ui_DeepFaceTrackSettingsDialog.h"
+
+#include <cmath>
+
 #include "api/plugin-api.hpp"
 #include "compat/timer.hpp"
 #include "compat/macros.hpp"
-#include "QtFaceTracker.h"
 
-#include <cmath>
+#include "..\pytorch_test\memory_map_data.h"
+#include "..\deep_face_track_camera\process.h"
+#include "dft_frame_data.h"
 
 class DeepFaceTracker : public ITracker
 {
@@ -17,11 +21,13 @@ public:
 	module_status start_tracker(QFrame *) override;
 	void data(double *data) override;
 
+protected:
+	Process reco;
+	MemoryMapData< DeepFaceTrackMemMap > dat;
+	DeepFaceTrack_State state;
+
 private:
-	static const double incr[6];
-	double last_x[6];
 	Timer t;
-	QtFaceTracker ft;
 };
 
 class DeepFaceTrackerDialog : public ITrackerDialog
@@ -29,10 +35,12 @@ class DeepFaceTrackerDialog : public ITrackerDialog
 	Q_OBJECT
 
 	Ui::Dialog ui;
+
 public:
 	DeepFaceTrackerDialog();
 	void register_tracker(ITracker *) override {}
 	void unregister_tracker() override {}
+
 private slots:
 	void doOK();
 	void doCancel();
