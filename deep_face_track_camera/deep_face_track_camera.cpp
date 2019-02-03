@@ -197,12 +197,6 @@ int main(int argc, char * argv[])
 				return -1;
 			}
 			int command = host().command;
-			host().x = x;
-			host().y = y;
-			host().z = z;
-			host().yaw = yaw;
-			host().pitch = pitch;
-			host().roll = roll;
 			host().handshake = host().handshake + 1;
 			host.unlock();
 			switch (command)
@@ -253,6 +247,27 @@ int main(int argc, char * argv[])
 			data().captured = true;
 			data().processed = false;
 			data.unlock();
+
+			if (have_host)
+			{
+				host.lock();
+				if (host().handshake >= MAX_TIMEOUT)
+				{
+					host.unlock();
+					std::cout << "exceed max timeout" << std::endl;
+					set_state(have_host, host, DeepFaceTrack_State::DnnError);
+					return -1;
+				}
+				host().x = x;
+				host().y = y;
+				host().z = z;
+				host().yaw = yaw;
+				host().pitch = pitch;
+				host().roll = roll;
+				host.unlock();
+			}
+
+			//std::cout << "x: " << x << " y: " << y << " z: " << z << " yaw: " << yaw << " pitch: " << pitch << " roll: " << roll << std::endl;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME));

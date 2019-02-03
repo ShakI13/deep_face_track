@@ -17,7 +17,7 @@ int main()
 	if (!data.create(DFT_IMAGE, DFT_IMAGE_MUTEX, true))
 	{
 		std::cout << "failed to open recognition mapping" << std::endl;
-		return -1;
+		//return -1;
 	}
 
 	std::string bufferName;

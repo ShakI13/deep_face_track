@@ -100,7 +100,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;C:\dev\deep_face_track\ThirdParty\plaidml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -130,8 +130,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opencv_core345d.lib;opencv_highgui345d.lib;opencv_imgproc345d.lib;opencv_imgcodecs345d.lib;opencv_videoio345d.lib;opencv_dnn345d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core345d.lib;opencv_highgui345d.lib;opencv_imgproc345d.lib;opencv_imgcodecs345d.lib;opencv_videoio345d.lib;opencv_dnn345d.lib;plaidml.dll.if.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\plaidml\bazel-out\x64_windows-fastbuild\bin\plaidml;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -190,7 +190,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\libtorch\include;C:\dev\deep_face_track\ThirdParty\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\libtorch\include;C:\dev\deep_face_track\ThirdParty\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;C:\dev\deep_face_track\ThirdParty\plaidml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++11</CppLanguageStandard>
@@ -221,8 +221,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>opencv_core345.lib;opencv_highgui345.lib;opencv_imgproc345.lib;opencv_imgcodecs345.lib;opencv_videoio345.lib;opencv_dnn345.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core345.lib;opencv_highgui345.lib;opencv_imgproc345.lib;opencv_imgcodecs345.lib;opencv_videoio345.lib;opencv_dnn345.lib;plaidml.dll.if.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib;$(OutputDir);C:\dev\deep_face_track\ThirdParty\plaidml\bazel-out\x64_windows-fastbuild\bin\plaidml;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

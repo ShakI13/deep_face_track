@@ -154,7 +154,8 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 			//}
 
 			_net_pose.setInput(blob_face);
-			outNames = { "509", "510", "511" };
+			//outNames = { "509", "510", "511" };
+			outNames = { "128", "129", "130" };
 			outs.clear();
 			_net_pose.forward(outs, outNames);
 
@@ -289,8 +290,8 @@ void FaceTracker::getTranslations(float & x, float & y, float & z)
 		float w = _img_captured.cols;
 		float imSize = w*h;
 
-		x = px;// -w / 2.0f;
-		y = py;// -h / 2.0f;
+		x = px;
+		y = py;
 		z = fsize / imSize;
 	}
 }
@@ -308,6 +309,7 @@ void FaceTracker::_load_face_detector_net()
 		);
 		_net_detector.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
 		_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
+		//_net_detector.setPreferableTarget(cv::dnn::Target::DNN_TARGET_CPU);
 		//std::cout << "done.\n";
 	}
 }
@@ -321,6 +323,7 @@ void FaceTracker::_load_head_pose_net()
 		_net_pose = cv::dnn::readNetFromONNX(model_path);
 		_net_pose.setPreferableBackend(cv::dnn::Backend::DNN_BACKEND_OPENCV);
 		_net_pose.setPreferableTarget(cv::dnn::Target::DNN_TARGET_OPENCL);
+		//_net_pose.setPreferableTarget(cv::dnn::Target::DNN_TARGET_CPU);
 		//std::cout << "done.\n";
 	}
 }

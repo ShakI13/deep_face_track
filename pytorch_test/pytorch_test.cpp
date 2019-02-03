@@ -2,6 +2,8 @@
 #include <fstream>
 #include <memory>
 #include <math.h>
+#include <fstream>
+#include <streambuf>
 
 #include "opencv2\core.hpp"
 #include "opencv2\imgproc.hpp"
@@ -9,8 +11,31 @@
 #include "opencv2\videoio.hpp"
 #include "opencv2\dnn.hpp"
 #include "opencv2\core\ocl.hpp"
+
+#include "plaidml++.h"
+//#include "plaidml.h"
+
 #include "face_tracker.h"
 #include "memory_map_data.h"
+
+void test_plaidml()
+{
+	std::ifstream t("./.plaidml");
+	std::string config((std::istreambuf_iterator<char>(t)),
+		std::istreambuf_iterator<char>());
+
+	std::shared_ptr< vertexai::ctx > context;
+	context.reset(new vertexai::ctx());
+
+	auto devices = vertexai::plaidml::enumerate_devices(context);
+	for (int i = 0; i < devices.size(); i++)
+	{
+		auto dev = devices[i];
+		std::cout << "id: " << dev.id() << std::endl;
+		std::cout << "desc: " << dev.description() << std::endl;
+		std::cout << "details: " << dev.details() << std::endl;
+	}
+}
 
 void test_opencv()
 {
@@ -167,10 +192,12 @@ void test_mutex()
 
 int main()
 {
+	test_plaidml();
 	//test_opencv();
 	//test_torch();
-	test_network();
+	//test_network();
 	//test_mutex();
+	std::getchar();
 	return 0;
 
 	//std::vector< cv::ocl::PlatformInfo > platformsInfo;
