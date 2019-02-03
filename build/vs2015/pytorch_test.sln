@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pytorch_test", "pytorch_test\pytorch_test.vcxproj", "{C656AD01-D7C3-488A-BBFD-A9FF21B4D74A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pytorch_test", "pytorch_test.vcxproj", "{C656AD01-D7C3-488A-BBFD-A9FF21B4D74A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opentrack-tracker-deepface", "opentrack-tracker-deepface\opentrack-tracker-deepface.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opentrack-tracker-deepface", "opentrack-tracker-deepface.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpu_info", "gpu_info\gpu_info.vcxproj", "{038935B4-77B4-4DC0-A199-4830CD83EB79}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpu_info", "gpu_info.vcxproj", "{038935B4-77B4-4DC0-A199-4830CD83EB79}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deep_face_track_camera", "deep_face_track_camera\deep_face_track_camera.vcxproj", "{1E626197-C9E3-47EB-8F1A-1694C3EEF42A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deep_face_track_camera", "deep_face_track_camera.vcxproj", "{1E626197-C9E3-47EB-8F1A-1694C3EEF42A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deep_face_track_recognition", "deep_face_track_recognition\deep_face_track_recognition.vcxproj", "{0C881C6E-51A1-4B04-83CF-8ABECBDE84CB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "deep_face_track_recognition", "deep_face_track_recognition.vcxproj", "{0C881C6E-51A1-4B04-83CF-8ABECBDE84CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

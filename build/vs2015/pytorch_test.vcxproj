@@ -57,8 +57,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\dev\deep_face_track\cpp\pytorch_test\x64\Debug</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pytorch_test.dir\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\x64\$(Configuration)</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pytorch_test</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pytorch_test</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
@@ -67,8 +67,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\dev\deep_face_track\cpp\pytorch_test\x64\Release</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pytorch_test.dir\Release\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\x64\$(Configuration)</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pytorch_test</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pytorch_test</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
@@ -98,10 +98,18 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\x86\$(Configuration)</OutDir>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\x86\$(Configuration)</OutDir>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;C:\dev\deep_face_track\ThirdParty\plaidml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++11</CppLanguageStandard>
@@ -135,8 +143,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Debug/pytorch_test.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Debug/pytorch_test.pdb</ProgramDataBaseFile>
+      <ImportLibrary>$(OutputPath)pytorch_test.lib</ImportLibrary>
+      <ProgramDataBaseFile>$(OutputPath)pytorch_test.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -146,7 +154,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++11</CppLanguageStandard>
@@ -180,8 +188,8 @@
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Debug/pytorch_test.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Debug/pytorch_test.pdb</ProgramDataBaseFile>
+      <ImportLibrary>$(OutputPath)pytorch_test.lib</ImportLibrary>
+      <ProgramDataBaseFile>$(OutputPath)pytorch_test.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -191,7 +199,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\libtorch\include;C:\dev\deep_face_track\ThirdParty\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;C:\dev\deep_face_track\ThirdParty\plaidml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++11</CppLanguageStandard>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -226,8 +234,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.pdb</ProgramDataBaseFile>
+      <ImportLibrary>$(OutputPath)pytorch_test.lib</ImportLibrary>
+      <ProgramDataBaseFile>$(OutputPath)pytorch_test.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
@@ -238,7 +246,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\dev\deep_face_track\ThirdParty\libtorch\include;C:\dev\deep_face_track\ThirdParty\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include;C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <CppLanguageStandard>c++11</CppLanguageStandard>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -273,8 +281,8 @@
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/dev/deep_face_track/cpp/pytorch_test/pytorch_test/build/Release/pytorch_test.pdb</ProgramDataBaseFile>
+      <ImportLibrary>$(OutputPath)pytorch_test.lib</ImportLibrary>
+      <ProgramDataBaseFile>$(OutputPath)pytorch_test.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
       <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
@@ -284,18 +292,18 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
-    <ClCompile Include="C:\dev\deep_face_track\cpp\pytorch_test\pytorch_test\pytorch_test.cpp" />
-    <ClCompile Include="cameras_discovery.cpp" />
-    <ClCompile Include="face_tracker.cpp" />
-    <ClCompile Include="memory_map_data.cpp" />
+    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
+    <ClCompile Include="..\..\pytorch_test\pytorch_test.cpp" />
+    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
+    <ClCompile Include="..\..\pytorch_test\face_tracker.cpp" />
+    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
-    <ClInclude Include="cameras_discovery.h" />
-    <ClInclude Include="face_tracker.h" />
-    <ClInclude Include="memory_map_data.h" />
-    <ClInclude Include="soft_max.h" />
+    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
+    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
+    <ClInclude Include="..\..\pytorch_test\face_tracker.h" />
+    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\pytorch_test\soft_max.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

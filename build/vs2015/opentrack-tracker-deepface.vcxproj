@@ -46,20 +46,24 @@
     <QtMsBuild>$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\x64\$(Configuration)</OutDir>
     <TargetName>lib$(ProjectName)</TargetName>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <OutDir>..\x86\$(Configuration)</OutDir>
     <TargetName>lib$(ProjectName)</TargetName>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\x64\$(Configuration)</OutDir>
     <TargetName>lib$(ProjectName)</TargetName>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <OutDir>..\x86\$(Configuration)</OutDir>
     <TargetName>lib$(ProjectName)</TargetName>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -172,24 +176,24 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\deep_face_track_camera\process.cpp" />
-    <ClCompile Include="..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
+    <ClCompile Include="..\..\deep_face_track_camera\process.cpp" />
+    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+    <ClCompile Include=".\GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
+    <ClCompile Include=".\GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="opentracktrackerdeepface.cpp" />
+    <ClCompile Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\deep_face_track_camera\process.h" />
-    <ClInclude Include="..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="dft_frame_data.h" />
-    <ClInclude Include="GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h" />
-    <CustomBuild Include="opentracktrackerdeepface.h">
+    <ClInclude Include="..\..\deep_face_track_camera\process.h" />
+    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_frame_data.h" />
+    <ClInclude Include=".\GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h" />
+    <CustomBuild Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Identity)...</Message>
@@ -207,10 +211,10 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DOPENTRACKTRACKERDEEPFACE_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtWidgets" "-IC:\dev\deep_face_track\cpp\opentrack" "-IC:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -D_UNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DOPENTRACKTRACKERDEEPFACE_LIB -D%(PreprocessorDefinitions)  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtWidgets" "-IC:\dev\deep_face_track\cpp\opentrack" "-IC:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\include"</Command>
     </CustomBuild>
-    <ClInclude Include="opentracktrackerdeepface_global.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface_global.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="DeepFaceTrackSettingsDialog.ui">
+    <CustomBuild Include="..\..\opentrack-tracker-deepface\DeepFaceTrackSettingsDialog.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Identity)...</Message>

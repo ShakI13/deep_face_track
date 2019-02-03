@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
+    <ClCompile Include="..\..\pytorch_test\face_tracker.cpp" />
+    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
+    <ClCompile Include="..\..\pytorch_test\pytorch_test.cpp" />
+    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D29A1410-3A93-3166-B16E-C0E20B17C597}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\pytorch_test\soft_max.h" />
+    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
+    <ClInclude Include="..\..\pytorch_test\face_tracker.h" />
+    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
+  </ItemGroup>
+</Project>

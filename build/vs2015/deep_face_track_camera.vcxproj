@@ -44,9 +44,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
+    <OutDir>..\x86\$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IntDir>tmp\$(ProjectName)\$(Platform)$(Configuration)\</IntDir>
+    <OutDir>..\x86\$(Configuration)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,19 +83,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
-    <ClCompile Include="..\pytorch_test\cameras_discovery.cpp" />
-    <ClCompile Include="..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="deep_face_track_camera.cpp" />
-    <ClCompile Include="process.cpp" />
+    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
+    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
+    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+    <ClCompile Include="..\..\deep_face_track_camera\deep_face_track_camera.cpp" />
+    <ClCompile Include="..\..\deep_face_track_camera\process.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
-    <ClInclude Include="..\opentrack-tracker-deepface\dft_frame_data.h" />
-    <ClInclude Include="..\opentrack-tracker-deepface\dft_image_data.h" />
-    <ClInclude Include="..\pytorch_test\cameras_discovery.h" />
-    <ClInclude Include="..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="process.h" />
+    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_frame_data.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_image_data.h" />
+    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
+    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\deep_face_track_camera\process.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

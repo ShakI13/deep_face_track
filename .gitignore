@@ -5,7 +5,9 @@
 .vs
 x64
 *.TMP
-build
+*.zip
+mixed
+tmp
 Release
 Debug
 GeneratedFiles

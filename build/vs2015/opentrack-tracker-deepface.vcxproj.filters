@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="opentracktrackerdeepface.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
+    <ClCompile Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.cpp" />
+    <ClCompile Include="..\..\opentrack-tracker-deepface\GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
+    <ClCompile Include="..\..\opentrack-tracker-deepface\GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="..\deep_face_track_camera\process.cpp" />
+    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+    <ClCompile Include="..\..\deep_face_track_camera\process.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="opentracktrackerdeepface_global.h" />
-    <ClInclude Include="GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h">
+    <ClInclude Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface_global.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="dft_frame_data.h" />
-    <ClInclude Include="..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="..\deep_face_track_camera\process.h" />
+    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_frame_data.h" />
+    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\deep_face_track_camera\process.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -38,9 +38,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="DeepFaceTrackSettingsDialog.ui">
+    <CustomBuild Include="..\..\opentrack-tracker-deepface\DeepFaceTrackSettingsDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="opentracktrackerdeepface.h" />
+    <CustomBuild Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.h" />
   </ItemGroup>
 </Project>
