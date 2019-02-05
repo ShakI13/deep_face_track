@@ -4,11 +4,16 @@
 #include <fstream>
 #include <memory>
 #include <math.h>
+#include <chrono>
 
 #include "opencv2\core.hpp"
 #include "opencv2\imgproc.hpp"
 #include "opencv2\highgui.hpp"
 #include "opencv2\dnn.hpp"
+
+std::chrono::time_point<std::chrono::steady_clock> time_start();
+float time_elapsed(std::chrono::time_point<std::chrono::steady_clock> start);
+void enhance(cv::Mat& img);
 
 class FaceTracker
 {
@@ -41,6 +46,7 @@ protected:
 	float px = 0.0f;
 	float py = 0.0f;
 	float fsize = 0.0f;
+	float avr_fps = 0.0f;
 
 	void _load_face_detector_net();
 

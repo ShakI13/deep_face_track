@@ -1,6 +1,73 @@
 #include "face_tracker.h"
 #include "soft_max.h"
 #include "opencv2/core/ocl.hpp"
+#include <chrono>
+
+//float time_start()
+//{
+//	return cv::getTickCount();
+//}
+//
+//float time_elapsed(float start)
+//{
+//	return (cv::getTickCount() - start) / cv::getTickFrequency();
+//}
+
+std::chrono::time_point<std::chrono::steady_clock> time_start()
+{
+	return std::chrono::high_resolution_clock::now();
+}
+
+float time_elapsed(std::chrono::time_point<std::chrono::steady_clock> start)
+{
+	using milli = std::chrono::milliseconds;
+	auto now = std::chrono::high_resolution_clock::now();
+	return std::chrono::duration_cast<milli>(now - start).count() / 1000.0f;
+}
+
+void enhance(cv::Mat& img)
+{
+	auto h = img.rows;
+	auto w = img.cols;
+	unsigned char min_r = 256, min_g = 256, min_b = 256;
+	unsigned char max_r = 0, max_g = 0, max_b = 0;
+
+	for (int i = 0; i < h; i++)
+	{
+		unsigned char* src = img.data + i * img.step;
+		for (int j = 0; j < w; j++)
+		{
+			auto srcP = src + 3 * j;
+			if (min_r > srcP[0])
+				min_r = srcP[0];
+			if (max_r < srcP[0])
+				max_r = srcP[0];
+
+			if (min_g > srcP[1])
+				min_g = srcP[1];
+			if (max_g < srcP[1])
+				max_g = srcP[1];
+
+			if (min_b > srcP[2])
+				min_b = srcP[2];
+			if (max_b < srcP[2])
+				max_b = srcP[2];
+		}
+	}
+
+	for (int i = 0; i < h; i++)
+	{
+		unsigned char* src = img.data + i * img.step;
+		for (int j = 0; j < w; j++)
+		{
+			auto srcP = src + 3 * j;
+
+			srcP[0] = (unsigned char)(255.0f * (srcP[0] - min_r) / (float)(max_r - min_r));
+			srcP[1] = (unsigned char)(255.0f * (srcP[1] - min_g) / (float)(max_g - min_g));
+			srcP[2] = (unsigned char)(255.0f * (srcP[2] - min_b) / (float)(max_b - min_b));
+		}
+	}
+}
 
 FaceTracker::FaceTracker()
 {
@@ -25,13 +92,13 @@ void FaceTracker::start()
 	_timers["head_pose"] = 0.0f;
 	_timers["frame_time"] = 0.0f;
 
-	_timers["load_face_det"] = cv::getTickCount();
+	auto load_face_det = time_start();
 	_load_face_detector_net();
-	_timers["load_face_det"] = (cv::getTickCount() - _timers["load_face_det"]) / cv::getTickFrequency();
+	_timers["load_face_det"] = time_elapsed(load_face_det);
 
-	_timers["load_head_pose"] = cv::getTickCount();
+	auto load_head_pose = time_start();
 	_load_head_pose_net();
-	_timers["load_head_pose"] = (cv::getTickCount() - _timers["load_head_pose"]) / cv::getTickFrequency();
+	_timers["load_head_pose"] = time_elapsed(load_head_pose);
 
 	for (int i = 0; i < 66; i++)
 		idx.push_back(i);
@@ -65,23 +132,24 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 	int keyNumPlus = 45;
 	int keyNumMinus = 43;
 
-	float frame_time = cv::getTickCount();
-	_timers["acquire_image"] = cv::getTickCount();
+	auto frame_time = time_start();
+	auto acquire_image = time_start();
 	img.copyTo(_img_captured);
+	enhance(_img_captured);
 	cv::resize(_img_captured, _img_resized, cv::Size(300, 300));
 	auto blob = cv::dnn::blobFromImage(_img_resized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
-	_timers["acquire_image"] = (cv::getTickCount() - _timers["acquire_image"]) / cv::getTickFrequency();
+	_timers["acquire_image"] = time_elapsed(acquire_image);
 
-	_timers["detect"] = cv::getTickCount();
+	auto det_time = time_start();
 	std::vector<cv::String> outNames = _net_detector.getUnconnectedOutLayersNames();
 	_net_detector.setInput(blob);
 	std::vector<cv::Mat> outs;
 	_net_detector.forward(outs, outNames);
 	int h = _img_captured.rows;
 	int w = _img_captured.cols;
-	_timers["detect"] = (cv::getTickCount() - _timers["detect"]) / cv::getTickFrequency();
+	_timers["detect"] = time_elapsed(det_time);
 
-	_timers["head_pose"] = cv::getTickCount();
+	auto head_time = time_start();
 	float* data = (float*)outs[0].data;
 	for (size_t i = 0; i < outs[0].total(); i += 7)
 	{
@@ -94,7 +162,7 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 		int right = (int)(data[i + 5] * w);
 		int bottom = (int)(data[i + 6] * h);
 		if (dbgShow)
-			_debug_draw_face(confidence, left, top, right, bottom, _img_captured);
+			_debug_draw_face(avr_fps, left, top, right, bottom, _img_captured);
 
 		if (left < 0)
 			left = 0;
@@ -155,7 +223,7 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 
 			_net_pose.setInput(blob_face);
 			//outNames = { "509", "510", "511" };
-			outNames = { "128", "129", "130" };
+			outNames = { "139", "140", "141" };
 			outs.clear();
 			_net_pose.forward(outs, outNames);
 
@@ -205,7 +273,7 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 		_handle_eptr(eptr);
 		break;
 	}
-	_timers["head_pose"] = (cv::getTickCount() - _timers["head_pose"]) / cv::getTickFrequency();
+	_timers["head_pose"] = time_elapsed(head_time);
 
 	if (dbgShow)
 	{
@@ -243,7 +311,7 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 		cap.device().set(cv::VideoCaptureProperties::CAP_PROP_SATURATION, contrast);
 	}
 */
-	_timers["frame_time"] = (cv::getTickCount() - frame_time) / cv::getTickFrequency();
+	_timers["frame_time"] = time_elapsed(frame_time);
 	if (_fps.size() < (frameNum % 10 + 1))
 	{
 		_fps.push_back(0.0);
@@ -254,7 +322,7 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 	//std::cout << "Z: " << 100.0f * fsize / (float)(_img_captured.cols * _img_captured.rows);
 	frameNum++;
 
-	float avr_fps = _avr_fps(_fps);
+	avr_fps = _avr_fps(_fps);
 	if (avr_fps < _target_fps && _post_frame_wait_time > 1)
 	{
 		if (abs(avr_fps - _target_fps) > 5)

@@ -17,6 +17,7 @@
 
 #include "face_tracker.h"
 #include "memory_map_data.h"
+#include "cameras_discovery.h"
 
 void test_plaidml()
 {
@@ -190,13 +191,57 @@ void test_mutex()
 	client.unlock();
 }
 
+void test_image_corr()
+{
+	std::vector<float> fps;
+	int frameNum = 0;
+	CameraDiscovery cams;
+	cams.numCameras();
+	cams.selectDevice(0);
+
+	int s, w, h;
+	cams.getImageSize(w, h, s);
+	unsigned char* buffer = new unsigned char[s];
+	int keyCode = -1;
+
+	while (cams.getImage(buffer) && keyCode != 27)
+	{
+		auto frame_start = time_start();
+		cv::Mat img = cv::Mat(h, w, CV_8UC3, buffer);
+		enhance(img);
+
+		cv::namedWindow("cam");
+		cv::imshow("cam", img);
+		keyCode = cv::waitKey(1);
+
+		auto frame_time = time_elapsed(frame_start);
+		if (fps.size() < (frameNum % 10 + 1))
+		{
+			fps.push_back(0.0);
+		}
+		fps[frameNum % 10] = 1.0 / frame_time;
+		frameNum++;
+		float avr_fps = 0.0;
+		for (int i = 0; i < fps.size(); i++)
+		{
+			avr_fps += fps[i];
+		}
+		if (fps.size() > 0)
+		{
+			avr_fps /= fps.size();
+		}
+		std::cout << "fps: " << avr_fps << std::endl;
+	}
+}
+
 int main()
 {
-	test_plaidml();
+	//test_plaidml();
 	//test_opencv();
 	//test_torch();
 	//test_network();
 	//test_mutex();
+	test_image_corr();
 	std::getchar();
 	return 0;
 
