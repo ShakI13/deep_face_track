@@ -1,5 +1,7 @@
 #include <chrono>
 #include <thread>
+#include <Windows.h>
+#include <direct.h>
 
 #include "opencv2\opencv.hpp"
 
@@ -12,6 +14,9 @@
 
 int main()
 {
+	//SetEnvironmentVariableA("PATH", "%PATH%;./deepfacetrack");
+	_chdir(".\\deepfacetrack");
+
 	MemoryMapBuffer buffer;
 	MemoryMapData<DeepFaceTrackImageData> data;
 	if (!data.create(DFT_IMAGE, DFT_IMAGE_MUTEX, true))

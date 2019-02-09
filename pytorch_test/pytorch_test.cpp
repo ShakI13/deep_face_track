@@ -210,6 +210,8 @@ void test_image_corr()
 		cv::Mat img = cv::Mat(h, w, CV_8UC3, buffer);
 		enhance(img);
 
+		std::getchar();
+
 		cv::namedWindow("cam");
 		cv::imshow("cam", img);
 		keyCode = cv::waitKey(1);
@@ -231,6 +233,9 @@ void test_image_corr()
 			avr_fps /= fps.size();
 		}
 		std::cout << "fps: " << avr_fps << std::endl;
+
+		cv::imwrite("hoise_sample.bmp", img);
+		break;
 	}
 }
 

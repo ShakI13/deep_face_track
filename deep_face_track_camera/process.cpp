@@ -43,6 +43,7 @@ void _errorMessage(char *str, DWORD code = 0)  //display detailed error info
 	);
 	printf(str);
 	wprintf(err);
+	printf("\n");
 	//int msgboxID = MessageBoxW(NULL,
 	//	err,
 	//	(LPCWSTR)L"X",
@@ -110,7 +111,7 @@ bool Process::create(std::string app, std::vector<std::string> args)
 	}
 
 	ZeroMemory(&si, sizeof(si));
-	//GetStartupInfoA(&si);      //set startupinfo for the spawned process
+	GetStartupInfoA(&si);      //set startupinfo for the spawned process
 	//						   /*
 	//						   The dwFlags member tells CreateProcess how to make the process.
 	//						   STARTF_USESTDHANDLES validates the hStd* members. STARTF_USESHOWWINDOW

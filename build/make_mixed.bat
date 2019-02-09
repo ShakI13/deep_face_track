@@ -5,12 +5,20 @@
 @popd
 )
 
+@xcopy .\x86\Release\libopentrack-tracker-deepface.dll %OUT% /Y
+
+@set OUT=.\mixed\release\deepfacetrack\
+@if exist %OUT% (
+@pushd %OUT%
+@del *.* /Q
+@popd
+)
+
 @xcopy ..\3rdParty\data %OUT% /E /Y
 
 @xcopy .\x64\Release\deep_face_track_recognition.exe %OUT% /Y
 @xcopy .\x64\Release\gpu_info.exe %OUT% /Y
 @xcopy .\x86\Release\deep_face_track_camera.exe %OUT% /Y
-@xcopy .\x86\Release\libopentrack-tracker-deepface.dll %OUT% /Y
 
 @set OPENCV_PATH=..\3rdParty\opencv\x64\vc14\bin
 @xcopy %OPENCV_PATH%\opencv_core345.dll %OUT% /Y

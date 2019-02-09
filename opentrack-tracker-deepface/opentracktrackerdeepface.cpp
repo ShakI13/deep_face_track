@@ -23,8 +23,8 @@
 void _open_log()
 {
 	using namespace std;
-	freopen("output.txt", "w", stdout);
-	freopen("error.txt", "w", stderr);
+	//freopen("output.txt", "w", stdout);
+	freopen("dft_error.txt", "w", stderr);
 }
 
 void _write_log(std::string line)
@@ -76,7 +76,7 @@ module_status DeepFaceTracker::start_tracker(QFrame*)
 		if (!reco.is_running())
 		{
 			_write_log("creating reco...");
-			reco.create("./deep_face_track_camera.exe");
+			reco.create("./deepfacetrack/deep_face_track_camera.exe");
 			_write_log("creating reco done");
 		}
 
