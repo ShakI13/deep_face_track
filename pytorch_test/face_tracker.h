@@ -15,6 +15,8 @@ std::chrono::time_point<std::chrono::steady_clock> time_start();
 float time_elapsed(std::chrono::time_point<std::chrono::steady_clock> start);
 void enhance(cv::Mat& img);
 
+#define FT_WIN_NAME "DeepFaceTracker"
+
 class FaceTracker
 {
 public:
@@ -26,6 +28,7 @@ public:
 	virtual bool processImage(cv::Mat& img, bool dbgShow = false);
 	void getRotations(float& yaw, float& pitch, float& roll);
 	void getTranslations(float& x, float& y, float& z);
+	void setIsEnabled(bool val);
 
 protected:
 	cv::dnn::Net _net_detector;
@@ -36,6 +39,8 @@ protected:
 	std::vector<float> idx;
 	std::vector< float > _fps;
 	std::map< std::string, float > _timers;
+
+	bool _is_enabled;
 
 	float _target_fps = 25.0f;
 	int _post_frame_wait_time = 1;

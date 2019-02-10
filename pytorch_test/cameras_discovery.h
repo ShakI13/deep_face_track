@@ -13,6 +13,7 @@ public:
 	void selectDevice(int deviceId);
 	void getImageSize(int& width, int& height, int& size);
 	bool getImage(unsigned char* buffer);
+	bool haveImage();
 
 protected:
 	int _selectedId;

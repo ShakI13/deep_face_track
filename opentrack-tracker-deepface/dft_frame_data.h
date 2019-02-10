@@ -2,6 +2,7 @@
 
 static const char* FT_MM_DATA = "FT_DFT_SharedMem";
 static const char* FT_MUTEX = "FT_DFT_Mutex";
+static const char* FT_WIN_NAME = "DeepFaceTracker"; // camera preview window name
 
 // Contains recognition result of last captured image from the camera
 #pragma pack(push, 2)
@@ -16,6 +17,12 @@ struct DeepFaceTrackMemMap
 	float yaw; // face angle
 	float pitch; // face angle
 	float roll; // face angle
+	int win_x; // window position
+	int win_y; // window position
+	int win_w; // window size
+	int win_h; // window size
+	int frame_w; // camera image width
+	int frame_h; // camera image height
 };
 #pragma pack(pop)
 

@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <direct.h>
+#include <sstream>
 
 #include "../pytorch_test/cameras_discovery.h"
 #include "process.h"
@@ -125,7 +126,6 @@ void _write_log(std::string line)
 
 int main(int argc, char * argv[])
 {
-	//SetEnvironmentVariableA("PATH", "%PATH%;./deepfacetrack");
 	_chdir(".\\deepfacetrack");
 
 	bool show_log = false;
@@ -168,6 +168,9 @@ int main(int argc, char * argv[])
 	else
 		_write_log("started from host app, host memmap opened");
 
+	bool win_show = true;// !have_host;
+	int win_x = -1, win_y = -1, win_w = -1, win_h = -1;
+
 	_write_log("initializing");
 	set_state(have_host, host, DeepFaceTrack_State::Initializing);
 
@@ -180,10 +183,19 @@ int main(int argc, char * argv[])
 		return -1;
 	}
 
-	_write_log("selecting camera 0...");
+	std::stringstream ss;
+	ss << "selection camera " << cam_id << "...";
+	_write_log(ss.str());
 	cams.selectDevice(cam_id);
 	int size, width, height;
 	cams.getImageSize(width, height, size);
+	if (have_host)
+	{
+		host.lock();
+		host().frame_w = width;
+		host().frame_h = height;
+		host.unlock();
+	}
 
 	MemoryMapBuffer buffer;
 	if (!buffer.create("dft_image_buffer", size, false))
@@ -221,7 +233,7 @@ int main(int argc, char * argv[])
 	data().height = height;
 	data().captured = true;
 	data().processed = false;
-	data().dbg_show = true;
+	data().dbg_show = win_show;
 	_s(data(), buffer.mapname());
 	data.unlock();
 
@@ -247,6 +259,7 @@ int main(int argc, char * argv[])
 	_write_log("going to listening loop...");
 	bool is_processed = false;
 	float x, y, z, yaw, pitch, roll;
+	int frame_num = 0;
 	while (reco.is_running())
 	{
 		reco.iterate();
@@ -270,6 +283,11 @@ int main(int argc, char * argv[])
 				return -1;
 			}
 			int command = host().command;
+			//win_show = host().win_show;
+			win_x = host().win_x;
+			win_y = host().win_y;
+			win_w = host().win_w;
+			win_h = host().win_h;
 			host().handshake = host().handshake + 1;
 			host.unlock();
 			switch (command)
@@ -305,11 +323,23 @@ int main(int argc, char * argv[])
 			}
 		}
 
-		if (is_stoped)
-		{
-			_write_log("recognition is not started, waiting for commands");
-			continue;
-		}
+		data.lock();
+		data().dbg_show = win_show;
+		data().win_x = win_x;
+		data().win_y = win_y;
+		data().win_w = win_w;
+		data().win_h = win_h;
+		data().is_stopped = is_stoped;
+		data.unlock();
+
+		//if (frame_num % (15 * 10) == 0)
+		//{
+		//	//win_show = !win_show;
+		//	win_x += 20;
+		//	win_y += 20;
+		//}
+
+		frame_num++;
 
 		if (is_processed)
 		{
@@ -321,16 +351,6 @@ int main(int argc, char * argv[])
 			yaw = data().yaw;
 			pitch = data().pitch;
 			roll = data().roll;
-			if (!cams.getImage((unsigned char*)buffer.ptr()))
-			{
-				//std::cout << "failed to get image from camera" << std::endl;
-				data.unlock();
-				_write_log("failed to get image from camera");
-				_close_log();
-				return -1;
-			}
-			data().captured = true;
-			data().processed = false;
 			data.unlock();
 
 			if (have_host)
@@ -355,7 +375,25 @@ int main(int argc, char * argv[])
 				host.unlock();
 			}
 
-			//std::cout << "x: " << x << " y: " << y << " z: " << z << " yaw: " << yaw << " pitch: " << pitch << " roll: " << roll << std::endl;
+			if (!cams.haveImage())
+			{
+				_write_log("no new frame from image");
+				std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME * 10));
+				continue;
+			}
+			if (!cams.getImage((unsigned char*)buffer.ptr()))
+			{
+				//std::cout << "failed to get image from camera" << std::endl;
+				//data.unlock();
+				_write_log("failed to get image from camera");
+				_close_log();
+				return -1;
+			}
+			data.lock();
+			data().captured = true;
+			data().processed = false;
+			data.unlock();
+			is_processed = false;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME));

@@ -110,6 +110,16 @@ bool CameraDiscovery::getImage(unsigned char* buffer)
 	return false;
 }
 
+bool CameraDiscovery::haveImage()
+{
+	if (_selectedId >= 0 && _videoInput.isDeviceSetup(_selectedId))
+	{
+		return _videoInput.isFrameNew(_selectedId);
+	}
+
+	return true;
+}
+
 void CameraDiscovery::_enumerateCameras()
 {
 	std::vector< std::string > devices = _videoInput.getDeviceList();

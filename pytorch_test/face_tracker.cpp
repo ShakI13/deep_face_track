@@ -121,12 +121,17 @@ void FaceTracker::start()
 
 void FaceTracker::stop()
 {
-	cv::destroyWindow("webcam");
+	cv::destroyWindow(FT_WIN_NAME);
 	idx.clear();
 }
 
 bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 {
+	_timers["acquire_image"] = 0.0f;
+	_timers["detect"] = 0.0f;
+	_timers["head_pose"] = 0.0f;
+	_timers["frame_time"] = 0.0f;
+
 	std::exception_ptr eptr;
 	int keyCode = -1;
 	int keyNumPlus = 45;
@@ -134,152 +139,157 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 
 	auto frame_time = time_start();
 	auto acquire_image = time_start();
-	img.copyTo(_img_captured);
+	_img_captured = img;
 	enhance(_img_captured);
 	cv::resize(_img_captured, _img_resized, cv::Size(300, 300));
-	auto blob = cv::dnn::blobFromImage(_img_resized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
-	_timers["acquire_image"] = time_elapsed(acquire_image);
 
-	auto det_time = time_start();
-	std::vector<cv::String> outNames = _net_detector.getUnconnectedOutLayersNames();
-	_net_detector.setInput(blob);
-	std::vector<cv::Mat> outs;
-	_net_detector.forward(outs, outNames);
-	int h = _img_captured.rows;
-	int w = _img_captured.cols;
-	_timers["detect"] = time_elapsed(det_time);
-
-	auto head_time = time_start();
-	float* data = (float*)outs[0].data;
-	for (size_t i = 0; i < outs[0].total(); i += 7)
+	if (_is_enabled)
 	{
-		float confidence = data[i + 2];
-		if (confidence <= 0.25f)
-			continue;
+		auto blob = cv::dnn::blobFromImage(_img_resized, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0));
+		_timers["acquire_image"] = time_elapsed(acquire_image);
 
-		int left = (int)(data[i + 3] * w);
-		int top = (int)(data[i + 4] * h);
-		int right = (int)(data[i + 5] * w);
-		int bottom = (int)(data[i + 6] * h);
-		if (dbgShow)
-			_debug_draw_face(avr_fps, left, top, right, bottom, _img_captured);
+		auto det_time = time_start();
+		std::vector<cv::String> outNames = _net_detector.getUnconnectedOutLayersNames();
+		_net_detector.setInput(blob);
+		std::vector<cv::Mat> outs;
+		_net_detector.forward(outs, outNames);
+		int h = _img_captured.rows;
+		int w = _img_captured.cols;
+		_timers["detect"] = time_elapsed(det_time);
 
-		if (left < 0)
-			left = 0;
-		if (top < 0)
-			top = 0;
-		if (left >= w)
-			left = w - 1;
-		if (top >= h)
-			top = h - 1;
-		if (right < 0)
-			right = 0;
-		if (bottom < 0)
-			bottom = 0;
-		if (right >= w)
-			right = w - 1;
-		if (bottom >= h)
-			bottom = h - 1;
-		int width = right - left + 1;
-		int height = bottom - top + 1;
-
-		if (width < 10 || height < 10)
-			continue;
-
-		px = left + width / 2.0f;
-		py = top + height / 2.0f;
-		fsize = width * height;
-
-		cv::Mat img_face = _img_captured(cv::Rect(left, top, right - left, bottom - top));
-		try {
-			img_face.convertTo(img_face, CV_32F, 1.0 / 255);
-			cv::resize(img_face, img_face, cv::Size(224, 224));
-			//cv::cvtColor(img_face, img_face, cv::COLOR_RGB2BGR);
-
-			std::vector< cv::Mat > img_channels(3);
-			cv::split(img_face, img_channels);
-			img_channels[0] = img_channels[0] - 0.485f;
-			img_channels[1] = img_channels[1] - 0.456f;
-			img_channels[2] = img_channels[2] - 0.406f;
-			img_channels[0] = img_channels[0] / 0.229f;
-			img_channels[1] = img_channels[1] / 0.224f;
-			img_channels[2] = img_channels[2] / 0.225f;
-			cv::merge(img_channels, img_face);
-
-			auto blob_face = cv::dnn::blobFromImage(img_face);
-
-			//// test python image and result
-			//auto img_data = load_test_image("C:\\dev\\deep_face_track\\image.txt");
-			//auto res_data = load_test_image("C:\\dev\\deep_face_track\\result.txt");
-			//// copy image
-			//float diff = 0.0f;
-			//for (int i = 0; i < img_data.size(); i++)
-			//{
-			//	float v1 = ((float*)blob_face.data)[i];
-			//	float v2 = img_data[i];
-			//	diff += abs(v1 - v2);
-			//	((float*)blob_face.data)[i] = img_data[i];
-			//}
-
-			_net_pose.setInput(blob_face);
-			//outNames = { "509", "510", "511" };
-			outNames = { "139", "140", "141" };
-			outs.clear();
-			_net_pose.forward(outs, outNames);
-
-			std::vector<float> yaw, pitch, roll;
-			yaw.assign((float*)outs[0].datastart, (float*)(outs[0].datastart) + 66);
-			pitch.assign((float*)outs[1].datastart, (float*)(outs[1].datastart) + 66);
-			roll.assign((float*)outs[2].datastart, (float*)(outs[2].datastart) + 66);
-
-			//// concatenate results
-			//std::vector<float> all_res;
-			//all_res.insert(all_res.end(), yaw.begin(), yaw.end());
-			//all_res.insert(all_res.end(), pitch.begin(), pitch.end());
-			//all_res.insert(all_res.end(), roll.begin(), roll.end());
-			//diff = 0.0f;
-			//for (int i = 0; i < all_res.size(); i++)
-			//{
-			//	float v1 = all_res[i];
-			//	float v2 = res_data[i];
-			//	diff += abs(v1 - v2);
-			//}
-
-			softmax(yaw);
-			softmax(pitch);
-			softmax(roll);
-
-			float yaw_sum = 0.0f, pitch_sum = 0.0f, roll_sum = 0.0f;
-			for (int i = 0; i < 66; i++)
-			{
-				yaw_sum += yaw[i] * idx[i];
-				pitch_sum += pitch[i] * idx[i];
-				roll_sum += roll[i] * idx[i];
-			}
-
-			yaw2 = yaw_sum * 3.0f - 99.0f;
-			pitch2 = pitch_sum * 3.0f - 99.0f;
-			roll2 = roll_sum * 3.0f - 99.0f;
-			if (dbgShow)
-				_debug_draw_axis(yaw2, pitch2, roll2, _img_captured, (left + right) / 2, (top + bottom) / 2, (bottom - top) / 2);
-		}
-		catch (std::exception & err) {
-			_log(err.what());
-		}
-		catch (...)
+		auto head_time = time_start();
+		float* data = (float*)outs[0].data;
+		for (size_t i = 0; i < outs[0].total(); i += 7)
 		{
-			eptr = std::current_exception();
+			float confidence = data[i + 2];
+			if (confidence <= 0.25f)
+				continue;
+
+			int left = (int)(data[i + 3] * w);
+			int top = (int)(data[i + 4] * h);
+			int right = (int)(data[i + 5] * w);
+			int bottom = (int)(data[i + 6] * h);
+			if (dbgShow)
+				_debug_draw_face(avr_fps, left, top, right, bottom, _img_captured);
+
+			if (left < 0)
+				left = 0;
+			if (top < 0)
+				top = 0;
+			if (left >= w)
+				left = w - 1;
+			if (top >= h)
+				top = h - 1;
+			if (right < 0)
+				right = 0;
+			if (bottom < 0)
+				bottom = 0;
+			if (right >= w)
+				right = w - 1;
+			if (bottom >= h)
+				bottom = h - 1;
+			int width = right - left + 1;
+			int height = bottom - top + 1;
+
+			if (width < 10 || height < 10)
+				continue;
+
+			px = left + width / 2.0f;
+			py = top + height / 2.0f;
+			fsize = width * height;
+
+			cv::Mat img_face = _img_captured(cv::Rect(left, top, right - left, bottom - top));
+			try {
+				img_face.convertTo(img_face, CV_32F, 1.0 / 255);
+				cv::resize(img_face, img_face, cv::Size(224, 224));
+				//cv::cvtColor(img_face, img_face, cv::COLOR_RGB2BGR);
+
+				std::vector< cv::Mat > img_channels(3);
+				cv::split(img_face, img_channels);
+				img_channels[0] = img_channels[0] - 0.485f;
+				img_channels[1] = img_channels[1] - 0.456f;
+				img_channels[2] = img_channels[2] - 0.406f;
+				img_channels[0] = img_channels[0] / 0.229f;
+				img_channels[1] = img_channels[1] / 0.224f;
+				img_channels[2] = img_channels[2] / 0.225f;
+				cv::merge(img_channels, img_face);
+
+				auto blob_face = cv::dnn::blobFromImage(img_face);
+
+				//// test python image and result
+				//auto img_data = load_test_image("C:\\dev\\deep_face_track\\image.txt");
+				//auto res_data = load_test_image("C:\\dev\\deep_face_track\\result.txt");
+				//// copy image
+				//float diff = 0.0f;
+				//for (int i = 0; i < img_data.size(); i++)
+				//{
+				//	float v1 = ((float*)blob_face.data)[i];
+				//	float v2 = img_data[i];
+				//	diff += abs(v1 - v2);
+				//	((float*)blob_face.data)[i] = img_data[i];
+				//}
+
+				_net_pose.setInput(blob_face);
+				//outNames = { "509", "510", "511" };
+				outNames = { "139", "140", "141" };
+				outs.clear();
+				_net_pose.forward(outs, outNames);
+
+				std::vector<float> yaw, pitch, roll;
+				yaw.assign((float*)outs[0].datastart, (float*)(outs[0].datastart) + 66);
+				pitch.assign((float*)outs[1].datastart, (float*)(outs[1].datastart) + 66);
+				roll.assign((float*)outs[2].datastart, (float*)(outs[2].datastart) + 66);
+
+				//// concatenate results
+				//std::vector<float> all_res;
+				//all_res.insert(all_res.end(), yaw.begin(), yaw.end());
+				//all_res.insert(all_res.end(), pitch.begin(), pitch.end());
+				//all_res.insert(all_res.end(), roll.begin(), roll.end());
+				//diff = 0.0f;
+				//for (int i = 0; i < all_res.size(); i++)
+				//{
+				//	float v1 = all_res[i];
+				//	float v2 = res_data[i];
+				//	diff += abs(v1 - v2);
+				//}
+
+				softmax(yaw);
+				softmax(pitch);
+				softmax(roll);
+
+				float yaw_sum = 0.0f, pitch_sum = 0.0f, roll_sum = 0.0f;
+				for (int i = 0; i < 66; i++)
+				{
+					yaw_sum += yaw[i] * idx[i];
+					pitch_sum += pitch[i] * idx[i];
+					roll_sum += roll[i] * idx[i];
+				}
+
+				yaw2 = yaw_sum * 3.0f - 99.0f;
+				pitch2 = pitch_sum * 3.0f - 99.0f;
+				roll2 = roll_sum * 3.0f - 99.0f;
+				if (dbgShow)
+					_debug_draw_axis(yaw2, pitch2, roll2, _img_captured, (left + right) / 2, (top + bottom) / 2, (bottom - top) / 2);
+			}
+			catch (std::exception & err) {
+				_log(err.what());
+			}
+			catch (...)
+			{
+				eptr = std::current_exception();
+			}
+			_handle_eptr(eptr);
+			break;
 		}
-		_handle_eptr(eptr);
-		break;
+		_timers["head_pose"] = time_elapsed(head_time);
 	}
-	_timers["head_pose"] = time_elapsed(head_time);
 
 	if (dbgShow)
 	{
-		cv::namedWindow("webcam", cv::WINDOW_KEEPRATIO | cv::WINDOW_AUTOSIZE);
-		cv::imshow("webcam", _img_captured);
+		//cv::namedWindow(FT_WIN_NAME, cv::WINDOW_KEEPRATIO | cv::WINDOW_AUTOSIZE);
+		cv::imshow(FT_WIN_NAME, _img_captured);
 		keyCode = cv::waitKey(_post_frame_wait_time);
+		keyCode = -1;
 	}
 
 	//std::cout << "keyCode: " << keyCode << std::endl;
@@ -323,20 +333,20 @@ bool FaceTracker::processImage(cv::Mat& img, bool dbgShow)
 	frameNum++;
 
 	avr_fps = _avr_fps(_fps);
-	if (avr_fps < _target_fps && _post_frame_wait_time > 1)
-	{
-		if (abs(avr_fps - _target_fps) > 5)
-			_post_frame_wait_time -= 5;
-		else
-			_post_frame_wait_time--;
-	}
-	if (avr_fps > _target_fps)
-	{
-		if (abs(avr_fps - _target_fps) > 5)
-			_post_frame_wait_time += 5;
-		else
-			_post_frame_wait_time++;
-	}
+	//if (avr_fps < _target_fps && _post_frame_wait_time > 1)
+	//{
+	//	if (abs(avr_fps - _target_fps) > 5)
+	//		_post_frame_wait_time -= 5;
+	//	else
+	//		_post_frame_wait_time--;
+	//}
+	//if (avr_fps > _target_fps)
+	//{
+	//	if (abs(avr_fps - _target_fps) > 5)
+	//		_post_frame_wait_time += 5;
+	//	else
+	//		_post_frame_wait_time++;
+	//}
 
 	return keyCode != 27;
 }
@@ -362,6 +372,11 @@ void FaceTracker::getTranslations(float & x, float & y, float & z)
 		y = py;
 		z = fsize / imSize;
 	}
+}
+
+void FaceTracker::setIsEnabled(bool val)
+{
+	_is_enabled = val;
 }
 
 void FaceTracker::_load_face_detector_net()
