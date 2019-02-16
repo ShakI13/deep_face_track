@@ -25,5 +25,6 @@ struct DeepFaceTrackImageData
 	float yaw; // face angle
 	float pitch; // face angle
 	float roll; // face angle
+	bool is_found;
 };
 #pragma pack(pop)

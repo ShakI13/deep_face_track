@@ -136,6 +136,12 @@ int main(int argc, char * argv[])
 	}
 	_open_log(show_log);
 
+	_write_log("Command line options:");
+	for (int i = 0; i < argc; i++)
+	{
+		_write_log(argv[i]);
+	}
+
 	char * camStr = getCmdOption(argv, argv + argc, "-c");
 	if (camStr != nullptr)
 	{
@@ -234,6 +240,7 @@ int main(int argc, char * argv[])
 	data().captured = true;
 	data().processed = false;
 	data().dbg_show = win_show;
+	data().is_found = false;
 	_s(data(), buffer.mapname());
 	data.unlock();
 
@@ -246,19 +253,19 @@ int main(int argc, char * argv[])
 		return -1;
 	}
 
-	_write_log("set state working");
+	_write_log("working");
 	set_state(have_host, host, DeepFaceTrack_State::Working);
 	bool is_stoped = false;
 	if (have_host)
 	{
-		_write_log("set state stopped");
+		_write_log("stopped");
 		set_state(have_host, host, DeepFaceTrack_State::Stopped);
 		is_stoped = true;
 	}
 
 	_write_log("going to listening loop...");
 	bool is_processed = false;
-	float x, y, z, yaw, pitch, roll;
+	float x = 0.0f, y = 0.0f, z = 0.0f, yaw = 0.0f, pitch = 0.0f, roll = 0.0f;
 	int frame_num = 0;
 	while (reco.is_running())
 	{
@@ -299,6 +306,7 @@ int main(int argc, char * argv[])
 					set_state(have_host, host, DeepFaceTrack_State::Working);
 					_write_log("received command to start, set state working");
 				}
+				command = 0;
 				break;
 			case FTNoIR_Tracker_Command::FT_CM_STOP:
 				if (!is_stoped)
@@ -307,6 +315,7 @@ int main(int argc, char * argv[])
 					set_state(have_host, host, DeepFaceTrack_State::Stopped);
 					_write_log("received command to stop, set state stopped");
 				}
+				command = 0;
 				break;
 			case FTNoIR_Tracker_Command::FT_CM_EXIT:
 				if (!is_stoped)
@@ -316,11 +325,26 @@ int main(int argc, char * argv[])
 					reco.close();
 					_write_log("received command to exit, exiting...");
 				}
+				command = 0;
+				break;
+			case FTNoIR_Tracker_Command::FT_CM_SHOWWINDOW:
+				win_show = true;
+				_write_log("received command to show the window");
+				command = 0;
+				break;
+			case FTNoIR_Tracker_Command::FT_CM_HIDEWINDOW:
+				win_show = false;
+				_write_log("received command to hide a window");
+				command = 0;
 				break;
 			default:
 				//_write_log("waiting for command from host");
+				command = 0;
 				break;
 			}
+			host.lock();
+			host().command = command;
+			host.unlock();
 		}
 
 		data.lock();
@@ -343,6 +367,7 @@ int main(int argc, char * argv[])
 
 		if (is_processed)
 		{
+			bool is_found = false;
 			//_write_log("frame recognized, getting results");
 			data.lock();
 			x = data().x;
@@ -351,18 +376,18 @@ int main(int argc, char * argv[])
 			yaw = data().yaw;
 			pitch = data().pitch;
 			roll = data().roll;
+			is_found = data().is_found;
 			data.unlock();
 
 			if (have_host)
 			{
-				_write_log("sending results to host...");
+				//_write_log("sending results to host...");
 				host.lock();
 				if (host().handshake >= MAX_TIMEOUT)
 				{
 					host.unlock();
 					_write_log("error: exceed host memmap handshake timeout");
-					std::cout << "exceed max timeout" << std::endl;
-					//set_state(have_host, host, DeepFaceTrack_State::DnnError);
+					set_state(have_host, host, DeepFaceTrack_State::DnnError);
 					_close_log();
 					return -1;
 				}
@@ -375,10 +400,29 @@ int main(int argc, char * argv[])
 				host.unlock();
 			}
 
+			if (is_stoped)
+			{
+				set_state(have_host, host, DeepFaceTrack_State::Stopped);
+				_write_log("stopped");
+			}
+			else
+			{
+				if (is_found)
+				{
+					set_state(have_host, host, DeepFaceTrack_State::Working);
+					//_write_log("working");
+				}
+				else
+				{
+					set_state(have_host, host, DeepFaceTrack_State::Initializing);
+					//_write_log("initializing");
+				}
+			}
+
 			if (!cams.haveImage())
 			{
-				_write_log("no new frame from image");
-				std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME * 10));
+				//_write_log("no new frame from image");
+				std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME * 2));
 				continue;
 			}
 			if (!cams.getImage((unsigned char*)buffer.ptr()))
@@ -386,6 +430,7 @@ int main(int argc, char * argv[])
 				//std::cout << "failed to get image from camera" << std::endl;
 				//data.unlock();
 				_write_log("failed to get image from camera");
+				set_state(have_host, host, DeepFaceTrack_State::CameraError);
 				_close_log();
 				return -1;
 			}

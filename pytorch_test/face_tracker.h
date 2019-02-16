@@ -29,6 +29,8 @@ public:
 	void getRotations(float& yaw, float& pitch, float& roll);
 	void getTranslations(float& x, float& y, float& z);
 	void setIsEnabled(bool val);
+	void setDisplaySize(int win_w, int win_h);
+	bool isFound() { return _is_found; }
 
 protected:
 	cv::dnn::Net _net_detector;
@@ -40,18 +42,23 @@ protected:
 	std::vector< float > _fps;
 	std::map< std::string, float > _timers;
 
-	bool _is_enabled;
+	bool _is_enabled = false;
+	bool _is_found = false;
 
 	float _target_fps = 25.0f;
 	int _post_frame_wait_time = 1;
-	int frameNum = 0;
-	float yaw2 = 0.0f;
-	float pitch2 = 0.0f;
-	float roll2 = 0.0f;
-	float px = 0.0f;
-	float py = 0.0f;
-	float fsize = 0.0f;
-	float avr_fps = 0.0f;
+	float _avr_fps = 0.0f;
+	int _frame_num = 0;
+	float _yaw = 0.0f;
+	float _pitch = 0.0f;
+	float _roll = 0.0f;
+	float _face_cx = 0.0f;
+	float _face_cy = 0.0f;
+	float _face_size = 0.0f;
+	float _face_width = 0.0f;
+	float _face_height = 0.0f;
+	float _win_w = 0.0f;
+	float _win_h = 0.0f;
 
 	void _load_face_detector_net();
 
@@ -63,7 +70,7 @@ protected:
 
 	void _debug_draw_axis(float yaw, float pitch, float roll, cv::Mat& img, float tdx = 0.0f, float tdy = 0.0f, float size = 100);
 
-	float _avr_fps(std::vector<float>& fps);
+	float _avr_fps_from_vector(std::vector<float>& fps);
 
 	void _debug_frame_report(int frame_num, float yaw, float pitch, float roll, std::vector<float>& fps, std::map< std::string, float >& timers);
 
