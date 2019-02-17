@@ -10,6 +10,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\gpu_info\gpu_info.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{038935B4-77B4-4DC0-A199-4830CD83EB79}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -86,9 +89,6 @@
       <AdditionalLibraryDirectories>C:\dev\deep_face_track\ThirdParty\opencv\opencv\build_dnn2\install\x64\vc14\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\gpu_info\gpu_info.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

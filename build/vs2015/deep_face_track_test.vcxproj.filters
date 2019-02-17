@@ -1,22 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
-    <ClCompile Include="..\..\pytorch_test\face_tracker.cpp" />
-    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
-    <ClCompile Include="..\..\pytorch_test\pytorch_test.cpp" />
-    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\cameras_discovery.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\utils\videoInput.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\face_tracker.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
+      <Filter>memmap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\pytorch_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{D29A1410-3A93-3166-B16E-C0E20B17C597}</UniqueIdentifier>
+    <Filter Include="utils">
+      <UniqueIdentifier>{95cde485-25ec-4848-8b42-1d99a38520c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memmap">
+      <UniqueIdentifier>{e4ec4670-d267-4de5-8501-d7398d4c690b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\pytorch_test\soft_max.h" />
-    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
-    <ClInclude Include="..\..\pytorch_test\face_tracker.h" />
-    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\cameras_discovery.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\videoInput.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\soft_max.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\face_tracker.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

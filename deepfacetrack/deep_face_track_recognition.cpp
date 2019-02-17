@@ -7,9 +7,9 @@
 
 #include "opencv2\opencv.hpp"
 
-#include "../pytorch_test/face_tracker.h"
-#include "../pytorch_test/memory_map_data.h"
-#include "../opentrack-tracker-deepface/dft_image_data.h"
+#include "face_tracker.h"
+#include "memmap/dft_image_data.h"
+#include "memmap/memory_map_data.h"
 
 #define MAX_TIMEOUT 100
 #define AWAIT_TIME 1

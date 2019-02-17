@@ -9,9 +9,9 @@
 #include "compat/timer.hpp"
 #include "compat/macros.hpp"
 
-#include "..\pytorch_test\memory_map_data.h"
-#include "..\deep_face_track_camera\process.h"
-#include "dft_frame_data.h"
+#include "../deepfacetrack/memmap/memory_map_data.h"
+#include "../deepfacetrack/memmap/dft_frame_data.h"
+#include "../deepfacetrack/utils/process.h"
 
 class DeepFaceTracker : public ITracker
 {

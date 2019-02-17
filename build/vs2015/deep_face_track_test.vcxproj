@@ -292,18 +292,18 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
-    <ClCompile Include="..\..\pytorch_test\pytorch_test.cpp" />
-    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
-    <ClCompile Include="..\..\pytorch_test\face_tracker.cpp" />
-    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\face_tracker.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\pytorch_test.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\cameras_discovery.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
-    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
-    <ClInclude Include="..\..\pytorch_test\face_tracker.h" />
-    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="..\..\pytorch_test\soft_max.h" />
+    <ClInclude Include="..\..\deepfacetrack\face_tracker.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\cameras_discovery.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\soft_max.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\videoInput.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

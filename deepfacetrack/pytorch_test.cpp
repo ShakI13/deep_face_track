@@ -16,8 +16,8 @@
 //#include "plaidml.h"
 
 #include "face_tracker.h"
-#include "memory_map_data.h"
-#include "cameras_discovery.h"
+#include "memmap/memory_map_data.h"
+#include "utils/cameras_discovery.h"
 
 void test_plaidml()
 {

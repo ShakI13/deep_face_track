@@ -7,11 +7,11 @@
 #include <direct.h>
 #include <sstream>
 
-#include "../pytorch_test/cameras_discovery.h"
-#include "process.h"
-#include "../opentrack-tracker-deepface/dft_image_data.h"
-#include "../opentrack-tracker-deepface/dft_frame_data.h"
-#include "../pytorch_test/memory_map_data.h"
+#include "utils/cameras_discovery.h"
+#include "utils/process.h"
+#include "memmap/dft_image_data.h"
+#include "memmap/dft_frame_data.h"
+#include "memmap/memory_map_data.h"
 
 #define MAX_TIMEOUT 100
 #define AWAIT_TIME 1

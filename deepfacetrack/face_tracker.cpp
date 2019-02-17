@@ -1,5 +1,5 @@
 #include "face_tracker.h"
-#include "soft_max.h"
+#include "utils/soft_max.h"
 #include "opencv2/core/ocl.hpp"
 #include <chrono>
 

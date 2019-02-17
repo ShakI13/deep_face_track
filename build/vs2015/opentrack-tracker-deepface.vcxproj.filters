@@ -1,31 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.cpp" />
-    <ClCompile Include="..\..\opentrack-tracker-deepface\GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
-      <Filter>Generated Files</Filter>
+    <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
+      <Filter>mew</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\opentrack-tracker-deepface\GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
-      <Filter>Generated Files</Filter>
+    <ClCompile Include="..\..\deepfacetrack\utils\process.cpp">
+      <Filter>mew</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="..\..\deep_face_track_camera\process.cpp" />
+    <ClCompile Include="..\..\opentrack\opentracktrackerdeepface.cpp">
+      <Filter>mew</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface_global.h" />
-    <ClInclude Include="..\..\opentrack-tracker-deepface\GeneratedFiles\ui_DeepFaceTrackSettingsDialog.h">
-      <Filter>Generated Files</Filter>
+    <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
+      <Filter>mew</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_frame_data.h" />
-    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="..\..\deep_face_track_camera\process.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h">
+      <Filter>mew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\process.h">
+      <Filter>mew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\opentrack\opentracktrackerdeepface.h">
+      <Filter>mew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\opentrack\opentracktrackerdeepface_global.h">
+      <Filter>mew</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
-      <Extensions>qrc;*</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
     <Filter Include="Form Files">
       <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
       <Extensions>ui</Extensions>
@@ -36,11 +39,13 @@
       <Extensions>moc;h;cpp</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
+    <Filter Include="mew">
+      <UniqueIdentifier>{1bee0cca-cf24-4087-8d4d-b0099eebed1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\opentrack-tracker-deepface\DeepFaceTrackSettingsDialog.ui">
+    <CustomBuild Include="..\..\opentrack\DeepFaceTrackSettingsDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\opentrack-tracker-deepface\opentracktrackerdeepface.h" />
   </ItemGroup>
 </Project>

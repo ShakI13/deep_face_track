@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "../../videoInput/videoInputSrcAndDemos/libs/videoInput/videoInput.h"
+#include "videoInput.h"
 
 class CameraDiscovery
 {

@@ -90,14 +90,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\pytorch_test\face_tracker.cpp" />
-    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="..\..\deep_face_track_recognition\deep_face_track_recognition.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\deep_face_track_recognition.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\face_tracker.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_image_data.h" />
-    <ClInclude Include="..\..\pytorch_test\face_tracker.h" />
-    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
+    <ClInclude Include="..\..\deepfacetrack\face_tracker.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

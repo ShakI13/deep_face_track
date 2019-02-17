@@ -1,18 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.cpp" />
-    <ClCompile Include="..\..\pytorch_test\cameras_discovery.cpp" />
-    <ClCompile Include="..\..\pytorch_test\memory_map_data.cpp" />
-    <ClCompile Include="..\..\deep_face_track_camera\deep_face_track_camera.cpp" />
-    <ClCompile Include="..\..\deep_face_track_camera\process.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\cameras_discovery.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\utils\process.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\utils\videoInput.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\deep_face_track_camera.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
+      <Filter>memmap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\videoInput\videoInputSrcAndDemos\libs\videoInput\videoInput.h" />
-    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_frame_data.h" />
-    <ClInclude Include="..\..\opentrack-tracker-deepface\dft_image_data.h" />
-    <ClInclude Include="..\..\pytorch_test\cameras_discovery.h" />
-    <ClInclude Include="..\..\pytorch_test\memory_map_data.h" />
-    <ClInclude Include="..\..\deep_face_track_camera\process.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\cameras_discovery.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\process.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\videoInput.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="utils">
+      <UniqueIdentifier>{a5246c75-7522-42aa-bcf8-13c602bbaf7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memmap">
+      <UniqueIdentifier>{c44f090c-9ee8-41f2-85b2-dc28b4d002f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
