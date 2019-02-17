@@ -28,5 +28,5 @@
 @xcopy %OPENCV_PATH%\opencv_highgui345.dll %OUT% /Y
 @xcopy %OPENCV_PATH%\opencv_videoio345.dll %OUT% /Y
 
-@set PLAIDML_PATH=..\3rdParty\plaidml\lib
-@xcopy %PLAIDML_PATH%\plaidml.dll %OUT% /Y
+@rem set PLAIDML_PATH=..\3rdParty\plaidml\lib
+@rem xcopy %PLAIDML_PATH%\plaidml.dll %OUT% /Y

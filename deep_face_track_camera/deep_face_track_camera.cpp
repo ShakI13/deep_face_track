@@ -241,6 +241,8 @@ int main(int argc, char * argv[])
 	data().processed = false;
 	data().dbg_show = win_show;
 	data().is_found = false;
+	data().is_stopped = true;
+	data().has_host = have_host;
 	_s(data(), buffer.mapname());
 	data.unlock();
 

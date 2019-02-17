@@ -101,8 +101,11 @@ void _validate_embed(HWND Handle, int x, int y, int w, int h, bool show)
 	//SetForegroundWindow(Handle);
 }
 
-void _validate_window(int x, int y, int w, int h, bool show)
+void _validate_window(int x, int y, int w, int h, bool show, bool has_host)
 {
+	if (!has_host)
+		return;
+		
 	HWND Handle = FindWindowA(0, FT_WIN_NAME);
 	LONG lStyle = GetWindowLong(Handle, GWL_STYLE);
 	lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU | WS_BORDER | WS_OVERLAPPED | WS_CHILD); // WS_BORDER WS_OVERLAPPED
@@ -135,6 +138,7 @@ int main()
 	float x = 0.0f, y = 0.0f, z = 0.0f;
 	float yaw = 0.0f, pitch = 0.0f, roll = 0.0f;
 	bool win_show = false;
+	bool has_host = false;
 	int win_x = -1, win_y = -1, win_w = -1, win_h = -1;
 
 	FaceTracker ft;
@@ -153,6 +157,7 @@ int main()
 			return -1;
 		}
 		dbg_show = data().dbg_show;
+		has_host = data().has_host;
 		if (win_x != data().win_x || win_y != data().win_y)
 		{
 			if (data().win_x >= 0 && data().win_y >= 0)
@@ -174,8 +179,8 @@ int main()
 
 		//if (win_x >= 0 && win_y >= 0)
 		{
-			cv::namedWindow(FT_WIN_NAME, cv::WINDOW_NORMAL);
-			_validate_window(win_x, win_y, win_w, win_h, dbg_show);
+			cv::namedWindow(FT_WIN_NAME, cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
+			_validate_window(win_x, win_y, win_w, win_h, dbg_show, has_host);
 		}
 		/*else
 		{

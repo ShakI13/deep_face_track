@@ -14,6 +14,8 @@ struct DeepFaceTrackImageData
 	bool processed;
 	bool dbg_show;
 	bool is_stopped;
+	bool is_found;
+	bool has_host;
 	char name[256];
 	int win_x;
 	int win_y;
@@ -25,6 +27,5 @@ struct DeepFaceTrackImageData
 	float yaw; // face angle
 	float pitch; // face angle
 	float roll; // face angle
-	bool is_found;
 };
 #pragma pack(pop)
