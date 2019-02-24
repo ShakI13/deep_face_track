@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deepfacetrack\face_tracker.h" />
-    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_recognition_data.h" />
     <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

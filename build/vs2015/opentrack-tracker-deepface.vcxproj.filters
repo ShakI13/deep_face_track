@@ -1,31 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include=".\GeneratedFiles\Debug\moc_opentracktrackerdeepface.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include=".\GeneratedFiles\Release\moc_opentracktrackerdeepface.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\opentrack\opentracktrackerdeepface.cpp" />
     <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
-      <Filter>mew</Filter>
+      <Filter>memmap</Filter>
     </ClCompile>
     <ClCompile Include="..\..\deepfacetrack\utils\process.cpp">
-      <Filter>mew</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\opentrack\opentracktrackerdeepface.cpp">
-      <Filter>mew</Filter>
+      <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\opentrack\opentracktrackerdeepface_global.h" />
     <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
-      <Filter>mew</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h">
-      <Filter>mew</Filter>
+      <Filter>memmap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\deepfacetrack\utils\process.h">
-      <Filter>mew</Filter>
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\opentrack\opentracktrackerdeepface.h">
-      <Filter>mew</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\opentrack\opentracktrackerdeepface_global.h">
-      <Filter>mew</Filter>
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h">
+      <Filter>memmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -39,13 +38,17 @@
       <Extensions>moc;h;cpp</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
-    <Filter Include="mew">
+    <Filter Include="utils">
       <UniqueIdentifier>{1bee0cca-cf24-4087-8d4d-b0099eebed1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memmap">
+      <UniqueIdentifier>{212ef5a4-7e65-404b-a760-eab8ed4f1d1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\opentrack\DeepFaceTrackSettingsDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\opentrack\opentracktrackerdeepface.h" />
   </ItemGroup>
 </Project>

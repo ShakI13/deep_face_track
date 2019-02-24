@@ -14,6 +14,12 @@
     <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
       <Filter>memmap</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\utils\command_line.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deepfacetrack\utils\log.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deepfacetrack\utils\cameras_discovery.h">
@@ -28,11 +34,17 @@
     <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h">
       <Filter>memmap</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h">
-      <Filter>memmap</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
       <Filter>memmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_recognition_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\command_line.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deepfacetrack\utils\log.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,17 +1,21 @@
+// ----------------------------------------------------------------------------
+// The MIT License
+// Copyright (c) 2019 Stanislav Khain <stas.khain@gmail.com>
+// ----------------------------------------------------------------------------
 #include "memory_map_data.h"
 
 #include <Windows.h>
 
-bool create_mapping(std::string memmap_name, std::string mutex_name, unsigned long size, void ** memmap, void ** mutex, void ** view, bool only_open)
+bool create_mapping(std::string memory_map_name, std::string mutex_name, unsigned long size, void ** memory_map, void ** mutex, void ** view, bool only_open)
 {
 	HANDLE _memmap = 0;
 	HANDLE _mutex = 0;
 	LPVOID _view = 0;
 
-	_memmap = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, memmap_name.c_str());
+	_memmap = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, memory_map_name.c_str());
 	if (_memmap == nullptr && ! only_open)
 	{
-		_memmap = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, memmap_name.c_str());
+		_memmap = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, memory_map_name.c_str());
 	}
 	if (_memmap != 0) 
 	{
@@ -25,7 +29,7 @@ bool create_mapping(std::string memmap_name, std::string mutex_name, unsigned lo
 		
 		if (_mutex != nullptr || mutex_name.size() == 0)
 		{
-			*memmap = _memmap;
+			*memory_map = _memmap;
 			*mutex = _mutex;
 			*view = _view;
 			return true;
@@ -34,9 +38,9 @@ bool create_mapping(std::string memmap_name, std::string mutex_name, unsigned lo
 	return false;
 }
 
-void release_mapping(void * memmap, void * mutex)
+void release_mapping(void * memory_map, void * mutex)
 {
-	memmap = nullptr;
+	memory_map = nullptr;
 	mutex = nullptr;
 }
 
@@ -53,6 +57,7 @@ void unlock_mutex(void * mutex)
 
 MemoryMapBuffer::MemoryMapBuffer()
 {
+	_memory_map = _ptr = nullptr;
 	close();
 }
 
@@ -65,17 +70,17 @@ bool MemoryMapBuffer::create(std::string name, int size, bool only_open)
 {
 	void* dummy;
 	_name = name;
-	return create_mapping(name, "", size, &_memmap, &dummy, &_ptr, only_open);
+	return create_mapping(name, "", size, &_memory_map, &dummy, &_ptr, only_open);
 }
 
 void MemoryMapBuffer::close()
 {
-	release_mapping(_memmap, nullptr);
+	release_mapping(_memory_map, nullptr);
 	_name = "";
-	_memmap = _ptr = nullptr;
+	_memory_map = _ptr = nullptr;
 }
 
-std::string MemoryMapBuffer::mapname()
+std::string MemoryMapBuffer::name()
 {
 	return _name;
 }

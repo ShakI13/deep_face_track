@@ -1,4 +1,8 @@
-﻿#include <iostream>
+﻿// ----------------------------------------------------------------------------
+// The MIT License
+// Copyright (c) 2019 Stanislav Khain <stas.khain@gmail.com>
+// ----------------------------------------------------------------------------
+#include <iostream>
 #include <fstream>
 #include <memory>
 #include <math.h>
@@ -18,6 +22,57 @@
 #include "face_tracker.h"
 #include "memmap/memory_map_data.h"
 #include "utils/cameras_discovery.h"
+#include "utils/process.h"
+
+
+int test_cameras()
+{
+	CameraDiscovery cams;
+
+	std::cout << "Found " << cams.num_cameras() << std::endl;
+	if (cams.num_cameras() > 0)
+	{
+		cams.select_device(0);
+		std::cout << "Selected camera " << 0 << std::endl;
+
+		int w = 0, h = 0, s = 0;
+		cams.get_image_size(w, h, s);
+		if (w > 0 && h > 0)
+		{
+			unsigned char* buffer = new unsigned char[s];
+			bool ret = cams.get_image(buffer);
+			if (!ret)
+			{
+				std::cout << "Failed to get an image from the camera" << std::endl;
+				return -1;
+			}
+			delete[] buffer;
+		}
+
+		std::cout << "All ok" << std::endl;
+		return 0;
+	}
+
+	std::cout << "Failed to find a camera" << std::endl;
+
+	return -1;
+}
+
+int test_gpu_info()
+{
+	std::cout << "Starting gpu_info.exe..." << std::endl;
+	Process reco;
+	reco.create("./gpu_info.exe");
+	while (reco.iterate())
+	{
+
+	}
+	reco.close();
+	std::cout << "done." << std::endl;
+	std::getchar();
+	return 0;
+}
+
 
 void test_plaidml()
 {
@@ -125,13 +180,13 @@ struct InfoPart
 	char message[256];
 }; 
 
-void test_set_str(InfoPart& info, std::string str)
+void set_name(InfoPart& info, std::string str)
 {
 	memset(&info.message[0], '\0', 256);
 	strcat_s(&info.message[0], 256, str.c_str());
 }
 
-#define _s(a, b) test_set_str(a,b)
+#define _s(a, b) set_name(a,b)
 
 void test_mutex()
 {
@@ -196,15 +251,15 @@ void test_image_corr()
 	std::vector<float> fps;
 	int frameNum = 0;
 	CameraDiscovery cams;
-	cams.numCameras();
-	cams.selectDevice(0);
+	cams.num_cameras();
+	cams.select_device(0);
 
 	int s, w, h;
-	cams.getImageSize(w, h, s);
+	cams.get_image_size(w, h, s);
 	unsigned char* buffer = new unsigned char[s];
 	int keyCode = -1;
 
-	while (cams.getImage(buffer) && keyCode != 27)
+	while (cams.get_image(buffer) && keyCode != 27)
 	{
 		auto frame_start = time_start();
 		cv::Mat img = cv::Mat(h, w, CV_8UC3, buffer);

@@ -1,3 +1,4 @@
+// ref: https://codereview.stackexchange.com/questions/177973/softmax-function-implementation
 #pragma once
 
 #include <cmath>

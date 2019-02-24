@@ -294,7 +294,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\deepfacetrack\face_tracker.cpp" />
     <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp" />
-    <ClCompile Include="..\..\deepfacetrack\pytorch_test.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\deep_face_track_test.cpp" />
     <ClCompile Include="..\..\deepfacetrack\utils\cameras_discovery.cpp" />
     <ClCompile Include="..\..\deepfacetrack\utils\videoInput.cpp" />
   </ItemGroup>

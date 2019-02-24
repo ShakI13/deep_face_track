@@ -1,3 +1,7 @@
+// ----------------------------------------------------------------------------
+// The MIT License
+// Copyright (c) 2019 Stanislav Khain <stas.khain@gmail.com>
+// ----------------------------------------------------------------------------
 #pragma once
 
 static const char* FT_MM_DATA = "FT_DFT_SharedMem";
@@ -10,13 +14,13 @@ struct DeepFaceTrackMemMap
 {
 	int handshake;
 	int command; // Command from FaceTrackNoIR
-	int state;
+	int state; // DeepFaceTrack internal state
 	float x; // face center X (left-right) position
 	float y; // face center Y (top-bottom) position
 	float z; // face center Z (closer-further) position
-	float yaw; // face angle
-	float pitch; // face angle
-	float roll; // face angle
+	float yaw; // face yaw angle
+	float pitch; // face pitch angle
+	float roll; // face roll angle
 	int win_x; // window position
 	int win_y; // window position
 	int win_w; // window size

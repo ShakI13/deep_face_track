@@ -8,13 +8,13 @@
     <ClCompile Include="..\..\deepfacetrack\deep_face_track_recognition.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h">
-      <Filter>memmap</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h">
       <Filter>memmap</Filter>
     </ClInclude>
     <ClInclude Include="..\..\deepfacetrack\face_tracker.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_recognition_data.h">
+      <Filter>memmap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="memmap">

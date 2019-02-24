@@ -20,14 +20,14 @@
 #include <cstdio>
 #include <string>
 
-void _open_log()
+void open_log()
 {
 	using namespace std;
 	//freopen("output.txt", "w", stdout);
 	freopen("dft_error.txt", "w", stderr);
 }
 
-void _write_log(std::string line)
+void write_log(std::string line)
 {
 	using namespace std;
 	cout << line << endl;
@@ -35,8 +35,8 @@ void _write_log(std::string line)
 
 DeepFaceTracker::DeepFaceTracker()
 {
-	_open_log();
-	_write_log("creating memmap...");
+	open_log();
+	write_log("creating memmap...");
 	state = DeepFaceTrack_State::Initializing;
 	if (!dat.create(FT_MM_DATA, FT_MUTEX, false))
 	{
@@ -46,7 +46,7 @@ DeepFaceTracker::DeepFaceTracker()
 		//msgBox.setStandardButtons(QMessageBox::Ok);
 		//msgBox.show();
 		state = DeepFaceTrack_State::CameraError;
-		_write_log("creating memmap failed");
+		write_log("creating memmap failed");
 		return;
 	}
 
@@ -54,7 +54,7 @@ DeepFaceTracker::DeepFaceTracker()
 	dat().handshake = dat().command = dat().state = state;
 	dat().x = dat().y = dat().z = dat().yaw = dat().pitch = dat().roll = 0.0f;
 	dat.unlock();
-	_write_log("creating memmap ok");
+	write_log("creating memmap ok");
 }
 
 DeepFaceTracker::~DeepFaceTracker()
@@ -75,14 +75,14 @@ module_status DeepFaceTracker::start_tracker(QFrame*)
 	if (state == DeepFaceTrack_State::Initializing)
 		if (!reco.is_running())
 		{
-			_write_log("creating reco...");
+			write_log("creating reco...");
 			reco.create("./deepfacetrack/deep_face_track_camera.exe");
-			_write_log("creating reco done");
+			write_log("creating reco done");
 		}
 
 	if (!reco.is_running())
 	{
-		_write_log("reco not started");
+		write_log("reco not started");
 		//QMessageBox msgBox;
 		//msgBox.setText("Failed to start reco!");
 		//msgBox.setInformativeText("Attemp to start reco failed");
@@ -92,7 +92,7 @@ module_status DeepFaceTracker::start_tracker(QFrame*)
 		return error("Attemp to start reco failed");
 	}
 
-	//_write_log("starting recognition");
+	//write_log("starting recognition");
 	dat.lock();
 	dat().command = FTNoIR_Tracker_Command::FT_CM_START;
 	dat().handshake = 0;
@@ -137,8 +137,8 @@ void DeepFaceTracker::data(double *data)
 	data[3] = yaw * 1.0f;
 	data[4] = pitch * 1.0f;
 	data[5] = roll * 1.0f;
-	//_write_log("data: done");
-	_write_log("state: " + std::to_string(state));
+	//write_log("data: done");
+	write_log("state: " + std::to_string(state));
 }
 
 DeepFaceTrackerDialog::DeepFaceTrackerDialog()

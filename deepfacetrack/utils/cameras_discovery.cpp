@@ -1,3 +1,7 @@
+// ----------------------------------------------------------------------------
+// The MIT License
+// Copyright (c) 2019 Stanislav Khain <stas.khain@gmail.com>
+// ----------------------------------------------------------------------------
 #include "cameras_discovery.h"
 
 #include <algorithm>
@@ -6,41 +10,43 @@
 #include <thread>
 #include <sstream>
 
+#include "log.h"
+
+// time to wait on get image failure
 #define AWAIT_TIME 1000
 
 CameraDiscovery::CameraDiscovery()
 {
 	_videoInput.setVerbose(false);
-	_selectedId = -1;
-	//_tempBuffer = nullptr;
-	_enumerateCameras();
+	_selected_id = -1;
+	_enumerate_cameras();
 }
 
 CameraDiscovery::~CameraDiscovery()
 {
-	_releaseSelected();
+	_release_selected();
 }
 
-int CameraDiscovery::numCameras()
+int CameraDiscovery::num_cameras()
 {
-	int numDevices = _videoInput.listDevices(true);
-	return numDevices;
+	int num_devices = _videoInput.listDevices(true);
+	return num_devices;
 }
 
-void CameraDiscovery::selectDevice(int deviceId)
+void CameraDiscovery::select_device(int deviceId)
 {
-	int numCameras = this->numCameras();
-	if (deviceId < numCameras && _selectedId != deviceId) {
-		_releaseSelected();
-		_selectedId = deviceId;
+	int num_cameras = this->num_cameras();
+	if (deviceId < num_cameras && _selected_id != deviceId) {
+		_release_selected();
+		_selected_id = deviceId;
 		if (deviceId >= 0)
 		{
-			bool ret = _videoInput.setupDevice(_selectedId);
+			bool ret = _videoInput.setupDevice(_selected_id);
 			if (!ret)
 			{
 				std::stringstream ss;
 				ss << "Failed to open camera device " << deviceId;
-				_log(ss.str());
+				write_log(ss.str());
 			}
 			else
 				std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME));
@@ -48,61 +54,36 @@ void CameraDiscovery::selectDevice(int deviceId)
 	}
 	else
 	{
-		_releaseSelected();
+		_release_selected();
 		std::stringstream ss;
 		ss << "Unknown camera device " << deviceId;
-		_log(ss.str());
+		write_log(ss.str());
 	}
 }
 
-void CameraDiscovery::getImageSize(int& width, int& height, int& size)
+void CameraDiscovery::get_image_size(int& width, int& height, int& size)
 {
 	width = height = size = -1;
-	if (_selectedId >= 0 && _videoInput.isDeviceSetup(_selectedId))
+	if (_selected_id >= 0 && _videoInput.isDeviceSetup(_selected_id))
 	{
-		width = _videoInput.getWidth(_selectedId);
-		height = _videoInput.getHeight(_selectedId);
-		size = _videoInput.getSize(_selectedId);
+		width = _videoInput.getWidth(_selected_id);
+		height = _videoInput.getHeight(_selected_id);
+		size = _videoInput.getSize(_selected_id);
 	}
 }
 
-bool CameraDiscovery::getImage(unsigned char* buffer)
+bool CameraDiscovery::get_image(unsigned char* buffer)
 {
-	if (_selectedId >= 0 && _videoInput.isDeviceSetup(_selectedId))
+	if (_selected_id >= 0 && _videoInput.isDeviceSetup(_selected_id))
 	{
-		int w = _videoInput.getWidth(_selectedId);
-		int h = _videoInput.getHeight(_selectedId);
-		//if (_tempBuffer == nullptr)
-		//	_tempBuffer = new unsigned char[_videoInput.getSize(_selectedId)];
-		//cv::Mat frame = cv::Mat(h, w, CV_8UC3);
+		int w = _videoInput.getWidth(_selected_id);
+		int h = _videoInput.getHeight(_selected_id);
 		bool ret = false;
-		ret = _videoInput.getPixels(_selectedId, buffer, false, true);
-		//if (frame.isContinuous())
-		//	ret = _videoInput.getPixels(_selectedId, frame.data, false, true);
-		//else
-		//{
-		//	ret = _videoInput.getPixels(_selectedId, _tempBuffer, false, true);
-		//	frame = cv::Mat(h, w, CV_8UC3, _tempBuffer);
-		//}
-		//frame.copyTo(img);
-		//auto ret = _selectedCap.read(img);
+		ret = _videoInput.getPixels(_selected_id, buffer, false, true);
 		if (!ret)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(AWAIT_TIME));
-			ret = _videoInput.getPixels(_selectedId, buffer, false, true);
-			//if (frame.isContinuous())
-			//	ret = _videoInput.getPixels(_selectedId, frame.data, false, true);
-			//else
-			//{
-			//	ret = _videoInput.getPixels(_selectedId, _tempBuffer, false, true);
-			//	frame = cv::Mat(h, w, CV_8UC3, _tempBuffer);
-			//}
-			//if (ret)
-			//{
-			//	frame.copyTo(img);
-			//	return true;
-			//}
-			//if (!_selectedCap.read(img))
+			ret = _videoInput.getPixels(_selected_id, buffer, false, true);
 			return false;
 		}
 		return true;
@@ -110,48 +91,37 @@ bool CameraDiscovery::getImage(unsigned char* buffer)
 	return false;
 }
 
-bool CameraDiscovery::haveImage()
+bool CameraDiscovery::have_image()
 {
-	if (_selectedId >= 0 && _videoInput.isDeviceSetup(_selectedId))
+	if (_selected_id >= 0 && _videoInput.isDeviceSetup(_selected_id))
 	{
-		return _videoInput.isFrameNew(_selectedId);
+		return _videoInput.isFrameNew(_selected_id);
 	}
 
 	return true;
 }
 
-void CameraDiscovery::_enumerateCameras()
+void CameraDiscovery::_enumerate_cameras()
 {
 	std::vector< std::string > devices = _videoInput.getDeviceList();
 	for (int i = 0; i < devices.size(); i++)
 	{
 		std::stringstream ss;
 		ss << "found " << devices[i];
-		_log(ss.str());
+		write_log(ss.str());
 	}
 
 	if (devices.size() == 0)
 	{
-		_log("no camera devices found!");
+		write_log("no camera devices found!");
 	}
 }
 
-void CameraDiscovery::_releaseSelected()
+void CameraDiscovery::_release_selected()
 {
-	if (_selectedId >= 0 && _videoInput.isDeviceSetup(_selectedId))
+	if (_selected_id >= 0 && _videoInput.isDeviceSetup(_selected_id))
 	{
-		_videoInput.stopDevice(_selectedId);
-		//if (_tempBuffer != nullptr)
-		//{
-		//	delete[] _tempBuffer;
-		//	_tempBuffer = nullptr;
-		//}
-		//_selectedCap.release();
+		_videoInput.stopDevice(_selected_id);
 	}
-	_selectedId = -1;
-}
-
-void CameraDiscovery::_log(std::string str)
-{
-	std::cout << str << std::endl;
+	_selected_id = -1;
 }

@@ -1,3 +1,7 @@
+// ----------------------------------------------------------------------------
+// The MIT License
+// Copyright (c) 2019 Stanislav Khain <stas.khain@gmail.com>
+// ----------------------------------------------------------------------------
 #include <vector>
 #include <string>
 #include <iostream>

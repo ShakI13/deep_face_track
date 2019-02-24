@@ -11,7 +11,7 @@
     <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp">
       <Filter>memmap</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\deepfacetrack\pytorch_test.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\deep_face_track_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utils">

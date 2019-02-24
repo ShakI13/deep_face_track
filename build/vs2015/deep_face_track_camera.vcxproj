@@ -86,14 +86,18 @@
     <ClCompile Include="..\..\deepfacetrack\deep_face_track_camera.cpp" />
     <ClCompile Include="..\..\deepfacetrack\memmap\memory_map_data.cpp" />
     <ClCompile Include="..\..\deepfacetrack\utils\cameras_discovery.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\command_line.cpp" />
+    <ClCompile Include="..\..\deepfacetrack\utils\log.cpp" />
     <ClCompile Include="..\..\deepfacetrack\utils\process.cpp" />
     <ClCompile Include="..\..\deepfacetrack\utils\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deepfacetrack\memmap\dft_frame_data.h" />
-    <ClInclude Include="..\..\deepfacetrack\memmap\dft_image_data.h" />
+    <ClInclude Include="..\..\deepfacetrack\memmap\dft_recognition_data.h" />
     <ClInclude Include="..\..\deepfacetrack\memmap\memory_map_data.h" />
     <ClInclude Include="..\..\deepfacetrack\utils\cameras_discovery.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\command_line.h" />
+    <ClInclude Include="..\..\deepfacetrack\utils\log.h" />
     <ClInclude Include="..\..\deepfacetrack\utils\process.h" />
     <ClInclude Include="..\..\deepfacetrack\utils\videoInput.h" />
   </ItemGroup>

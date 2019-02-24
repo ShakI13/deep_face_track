@@ -41,6 +41,7 @@ void _errorMessage(char *str, DWORD code = 0)  //display detailed error info
 		255,
 		NULL
 	);
+
 	printf(str);
 	wprintf(err);
 	printf("\n");
@@ -52,7 +53,7 @@ void _errorMessage(char *str, DWORD code = 0)  //display detailed error info
 
 Process::Process()
 {
-	processId = threadId = status = 0;
+	_process_id = _thread_id = _status = 0;
 	hProcess = hThread = newstdin = newstdout = read_stdout = write_stdin = nullptr;
 	close();
 }
@@ -145,9 +146,9 @@ bool Process::create(std::string app, std::vector<std::string> args)
 
 	hProcess = pi.hProcess;
 	hThread = pi.hThread;
-	processId = pi.dwProcessId;
-	threadId = pi.dwThreadId;
-	GetExitCodeProcess(hProcess, &status);      //while the process is running
+	_process_id = pi.dwProcessId;
+	_thread_id = pi.dwThreadId;
+	GetExitCodeProcess(hProcess, &_status);      //while the process is running
 
 	return true;
 }
@@ -158,16 +159,16 @@ bool Process::iterate()
 		return false;
 
 	char buf[1024];           //i/o buffer
-	status = 0;  //process exit code
+	_status = 0;  //process exit code
 	unsigned long bread;   //bytes read
 	unsigned long avail;   //bytes available
 
 	bzero(buf);
-	GetExitCodeProcess(hProcess, &status);      //while the process is running
-	if (status != STILL_ACTIVE)
+	GetExitCodeProcess(hProcess, &_status);      //while the process is running
+	if (_status != STILL_ACTIVE)
 	{
-		if (status != 0)
-			_errorMessage("Process crash:", status);
+		if (_status != 0)
+			_errorMessage("Process crash:", _status);
 		return false;
 	}
 
@@ -209,7 +210,7 @@ bool Process::iterate()
 
 bool Process::is_running()
 {
-	return status == STILL_ACTIVE;
+	return _status == STILL_ACTIVE;
 }
 
 void Process::close()
@@ -234,6 +235,6 @@ void Process::close()
 	if (write_stdin != nullptr)
 		CloseHandle(write_stdin);
 
-	processId = threadId = status = 0;
+	_process_id = _thread_id = _status = 0;
 	hProcess = hThread = newstdin = newstdout = read_stdout = write_stdin = nullptr;
 }
